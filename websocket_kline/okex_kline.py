@@ -17,15 +17,14 @@ from lib.logger import Logger
 from lib.config_manager import Config
 
 
-# memony 56MB ~ 60MB  -> 64MB
+futures_info_dict = []
+last_futures_info_dict = []
+
 
 class OkexKlineSpider(object):
-    def __init__(self, logger, symbol, exchange, req, kline_type):
+    def __init__(self, logger, exchange):
         self.logger = logger
-        self.symbol = symbol
         self.exchange = exchange
-        self.req = req
-        self.kline_type = kline_type
         self.last_item = None
         self.count = 0
 
@@ -39,8 +38,12 @@ class OkexKlineSpider(object):
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
-    def task_thread(self):
-        self.logger.info('数字货币：{} {} 数据获取开始时间：{}'.format(self.symbol, self.kline_type, time.strftime("%Y-%m-%d %H:%M:%S")))
+    def task_thread(self, index):
+        self.symbol = futures_info_dict[index]['pair1']
+        self.coin = futures_info_dict[index]['pair2']
+        self.kline_type = futures_info_dict[index]['timeid']
+        self.req = futures_info_dict[index]['kline']
+        self.logger.info('数字货币：{} {} ：{} 数据获取开始时间'.format(self.symbol,  self.coin, self.kline_type))
 
         # 反复尝试建立websocket连接
         while True:
@@ -57,10 +60,10 @@ class OkexKlineSpider(object):
                 break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.error('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.kline_type))
+                self.logger.error('数字货币： {} {} {} connect ws error, retry...'.format(self.symbol,  self.coin, self.kline_type))
                 time.sleep(1)
 
-        logger.info("数字货币： {} {} connect success".format(self.symbol, self.kline_type))
+        logger.info("数字货币： {} {} {} connect success".format(self.symbol,  self.coin, self.kline_type))
         # 获取数据加密类型（gzip）
         utype = self.exchange.get("utype")
 
@@ -71,84 +74,23 @@ class OkexKlineSpider(object):
         # 获取数据：
         while True:
             try:
-                now = datetime.utcnow()
-                if now.weekday() == 4 and now.hour == 8 and now.minute == 0 and 59 > now.second > 1:
-                    self.logger.info("================{} {} 开始交割，正在重新设定订阅方案================".format(self.symbol, self.kline_type))
-                    # ws.send(self.req.replace("sub", "unsub"))
-
-                    if self.kline_type in ['CW', 'NW']:
-                        new_time_id = None
-                        if self.kline_type == 'CW':
-                            new_time_id = str(datetime.utcnow() + timedelta(days=7))[2:10].replace("-", "")
-                        elif self.kline_type == 'NW':
-                            new_time_id = str(datetime.utcnow() + timedelta(days=14))[2:10].replace("-", "")
-
-                        self.req = "{" + self.req[1: -1].format(symbol=self.symbol, timeid=new_time_id) + "}"
-
-                        self.logger.info("{} {} {} 新的订阅方案: {}".format(self.symbol, self.kline_type, new_time_id, self.req))
-
-                        while True:
-                            try:
-                                ws = create_connection(self.exchange.get("socket_url"), http_proxy_host="127.0.0.1",
-                                                       http_proxy_port=random.randint(8080, 8323))
-                                ws.send(self.req)
-                                result = ws.recv()
-                                result = self.deflate_decode(result)
-                            except:
-                                # print("--result: {} {}".format(type(result), result))
-                                continue
-
-                            if result["event"] == "subscribe":
-                                self.logger.info("订阅频道更新成功： {}".format(result))
-                                break
-                            else:
-                                self.logger.info("订阅频道暂未更新： {}".format(result))
-                                time.sleep(10)
-                                continue
-                    else:
-                        self.logger.info("季度合约 与 永续合约暂不处理.")
-                        break
-                else:
-                    pass
+                if self.req != futures_info_dict[index]['kline']:
+                    raise TypeError("{} 合约已经更新: {}，需要重新发送请求...".format(self.req, futures_info_dict[index]['kline']))
 
                 try:
-                    # 设置 websocket 超时时间, 时间太久会导致 kline 一分钟没数据，因目前交易所采集稳定暂时不设置
-                    ws.settimeout(20)
-                    # 接收websocket响应
                     result = ws.recv()
-                except:
-                    ws.send("ping")
-
-
-                # 加密方式 gzip
-                if utype == 'gzip':
-                    try:
-                        result = gzip.decompress(result).decode('utf-8')
-                    except:
-                        pass
-                # 加密方式 deflate
-                elif utype == "deflate":
-                    try:
-                        result = self.deflate_decode(result)
-                    except:
-                        pass
-                # 加密方式 未加密
-                elif utype == "string":
-                    pass
-
-                # 如果websocket响应是 pong
-                if result == 'pong':
-                    # 则继续获取响应，保持连接
-                    pass
-                else:
-                    # self.logger.info(result)
+                    result = self.deflate_decode(result)
                     self.save_result_redis(result)
+                    ws.send("ping")
+                except:
+                    pass
+
 
             except Exception as e:
                 logger.info(e)
-                logger.info("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
+                logger.info("数字货币：{} {} {} 连接中断，reconnect.....".format(self.symbol,  self.coin, self.kline_type))
                 # 如果连接中断，递归调用继续
-                self.task_thread()
+                self.task_thread(index)
 
 
     def save_result_redis(self, result):
@@ -171,7 +113,7 @@ class OkexKlineSpider(object):
             item["Volume"] = eval(tick[5])
             # print(item)
 
-            redis_key_name = "okex:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
+            redis_key_name = "okex:futures:kline:{}_{}_{}_1min_kline".format(self.symbol, self.coin, self.kline_type)
             # now_time = int(time.time() / 60) * 60
 
             if self.last_item is None:
@@ -206,6 +148,61 @@ class MyThread(threading.Thread):
         self.target(*self.args)
 
 
+def get_liquidation():
+    while True:
+        try:
+            futures_url = "https://www.okex.com/api/futures/v3/instruments"
+            swap_url = "https://www.okex.com/api/swap/v3/instruments"
+
+            # proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
+
+            futures_list = requests.get(futures_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}).json()
+            futures_list += requests.get(swap_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}).json()
+
+
+
+            futures_kline = '{"op":"subscribe","args":"futures/candle60s:instrument_id"}'
+            swap_kline = '{"op":"subscribe","args":"swap/candle60s:instrument_id"}'
+
+            futures_info_list = []
+            for futures in futures_list:
+                item = {}
+                item['pair1'] = futures.get('base_currency')
+                item['pair2'] = futures.get("quote_currency")
+                timeid = futures.get('alias')
+                if timeid == 'this_week':
+                    item['timeid'] = 'CW'
+                elif timeid == 'next_week':
+                    item['timeid'] = 'NW'
+                elif timeid == 'quarter':
+                    item['timeid'] = 'CQ'
+                elif timeid == 'bi_quarter':
+                    item['timeid'] = 'NQ'
+                else:
+                    item['timeid'] = 'SWAP'
+
+                if item['timeid'] == 'SWAP':
+                    item['kline'] = swap_kline.replace("instrument_id", futures.get('instrument_id'))
+                else:
+                    item['kline'] = futures_kline.replace("instrument_id", futures.get('instrument_id'))
+                # {'pair1': 'BTC', 'pair2': 'USD', 'timeid': 'NQ', 'kline': '{"op":"subscribe","args":"futures/candle60s:BTC-USD-200925"}'}
+                futures_info_list.append(item)
+
+            global futures_info_dict, last_futures_info_dict
+            # print(futures_info_list)
+            # {0: {'pair1': 'XRP', 'pair2': 'USD', 'timeid': 'CW', 'kline': '{"op":"subscribe","args":"futures/candle60s:XRP-USD-200320"}'}
+            futures_info_dict = {index: futures for index, futures in enumerate(futures_info_list)}
+            if last_futures_info_dict != futures_info_dict:
+                last_futures_info_dict = futures_info_dict
+                for futures_info in futures_info_dict.items():
+                    logger.info(futures_info)
+            time.sleep(30)
+        except Exception as e:
+            logger.error(e)
+            time.sleep(10)
+
+
+
 if __name__ == "__main__":
     # k线 logger日志
     logger = Logger.get_logger("okex_kline_log")
@@ -234,53 +231,27 @@ if __name__ == "__main__":
     kline_info_list = exchange.get("kline_info")
 
     # 代理和requests报头
-    proxies = {
-        "https": "https://127.0.0.1:8300",
-    }
-    headers = {
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36',
-        'source': 'web'
-    }
 
     while True:
         # 子线程组
         thread_list = []
 
-        if pair_url:
-            # 获取当前页面币种信息，目前huobi不需要代理，其他需要代理
-            if proxy == "true":
-                resp = requests.get(pair_url, headers=headers, proxies=proxies).json()
-            else:
-                resp = requests.get(pair_url, headers=headers).json()
 
-            #####################################################################
-            # 获取所有合约币种信息（data 列表）
-            data_list = resp.get("data").get("usd")
-            # 获取所有合约币种名称（BTC、ETC、ETH、EOS、LTC、BCH、XRP、TRX、BSV）
-            symbol_list = [data.get("symbolDesc") for data in data_list]
-            print(symbol_list)
+        t = MyThread(target=get_liquidation, args=())
+        thread_list.append(t)
+        t.start()
 
-            # contract_info_list = [[contract.get("id")[2:8] for contract in contracts] for contracts in contracts_list]
-            contracts_list = [data.get("contracts") for data in data_list]
-
-            # ['191122', '191129', '191227', 'SWAP']
-            time_id_list = [contract.get("id")[2:8] for contract in contracts_list[0]] + ["SWAP"]
-            #####################################################################
-
-            # 获取所有k线采集方案(4次)
-            for kline_info, time_id in zip(kline_info_list, time_id_list):
-
+        # globals futures_info_dict
+        while True:
+            if futures_info_dict:
                 # 迭代每个币种，并构建该币种k线 websocket请求 (9次)
-                for symbol in symbol_list:
-                    kline_type = kline_info.get("kline_type")
-                    kline = kline_info.get('kline')
-                    # '{"op":"subscribe","args":"futures/depth:{symbol}-USD-{timeid}"}'
-                    req = "{" + kline[1: -1].format(symbol=symbol, timeid=time_id) + "}"
-                    spider = OkexKlineSpider(logger, symbol, exchange, req, kline_type)
-                    #t = MyThread(target=spider.task_thread, args=())
-                    t = MyThread(target=spider.task_thread, args=())
+                for index in futures_info_dict:
+                    spider = OkexKlineSpider(logger, exchange)
+                    t = MyThread(target=spider.task_thread, args=(index,))
                     thread_list.append(t)
                     t.start()
+                break
+            time.sleep(1)
 
         while True:
             length = len(threading.enumerate())

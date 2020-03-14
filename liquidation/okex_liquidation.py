@@ -13,10 +13,10 @@ from loguru import logger
 
 
 # 是否使用代理（如果为True，则代理按 127.0.0.1:8080-8232；如果为False，则不使用代理）
-proxies = True
+proxies = False
 
-liquidation_info_list = []
-last_liquidation_info_list = []
+liquidation_info_dict = []
+last_liquidation_info_dict = []
 
 
 class OkexSpider(object):
@@ -25,10 +25,10 @@ class OkexSpider(object):
         self.last_time = 0
 
     def main(self, index):
-        logger.info('数字货币：{} {} 强制平仓数据获取开始...'.format(liquidation_info_list[index]['symbol'], liquidation_info_list[index]['timeid']))
+        logger.info('数字货币：{} {} 强制平仓数据获取开始...'.format(liquidation_info_dict[index]['symbol'], liquidation_info_dict[index]['timeid']))
 
         while True:
-            liquidation = liquidation_info_list[index]
+            liquidation = liquidation_info_dict[index]
 
             self.symbol = liquidation['symbol']
             self.timeid = liquidation['timeid']
@@ -74,7 +74,7 @@ def proxy():
     if proxies:
         return {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8232))}
     else:
-        return None
+        return {"https": "http://127.0.0.1:1080"}
 
 def get_liquidation():
     while True:
@@ -123,16 +123,16 @@ def get_liquidation():
             # print(liquidation_list)
             # print(len(liquidation_list))
 
-            global liquidation_info_list, last_liquidation_info_list
+            global liquidation_info_dict, last_liquidation_info_dict
             # list
             #_ = [liquidation.setdefault('index', index) for index, liquidation in enumerate(liquidation_list) if "BTC" in liquidation['symbol']]
-            # liquidation_info_list = liquidation_list
+            # liquidation_info_dict = liquidation_list
 
             # dict
-            liquidation_info_list = {index: liquidation for index, liquidation in enumerate(liquidation_list)}
-            if last_liquidation_info_list != liquidation_info_list:
-                last_liquidation_info_list = liquidation_info_list
-                for liquidation_info in liquidation_info_list.items():
+            liquidation_info_dict = {index: liquidation for index, liquidation in enumerate(liquidation_list)}
+            if last_liquidation_info_dict != liquidation_info_dict:
+                last_liquidation_info_dict = liquidation_info_dict
+                for liquidation_info in liquidation_info_dict.items():
                     logger.info(liquidation_info)
 
             time.sleep(5)
@@ -149,8 +149,8 @@ if __name__ == "__main__":
     t.start()
 
     while True:
-        if liquidation_info_list:
-            for index in liquidation_info_list:
+        if liquidation_info_dict:
+            for index in liquidation_info_dict:
                 spider = OkexSpider()
                 t = threading.Thread(target=spider.main, args=(index,))
                 thread_list.append(t)

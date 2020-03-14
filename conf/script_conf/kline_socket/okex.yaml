@@ -8,13 +8,12 @@ okex:
   socket_url: "wss://real.okex.com:8443/ws/v3"                          # websocket 链接地址
 
   kline_info: [                                                                                         # 订阅 KLine 数据
-    {'kline': '{"op":"subscribe","args":"futures/candle60s:{symbol}-USD-{timeid}"}', 'kline_type': 'CW'},    # 交割合约(当周 60s)
-    {'kline': '{"op":"subscribe","args":"futures/candle60s:{symbol}-USD-{timeid}"}', 'kline_type': 'NW'},    # 交割合约(次周 60s)
-    {'kline': '{"op":"subscribe","args":"futures/candle60s:{symbol}-USD-{timeid}"}', 'kline_type': 'CQ'},    # 交割合约(季度 60s)
-    {'kline': '{"op":"subscribe","args":"futures/candle60s:{symbol}-USD-{timeid}"}', 'kline_type': 'NQ'},    # 交割合约(季度 60s)
-    {'kline': '{"op":"subscribe","args":"swap/candle60s:{symbol}-USD-{timeid}"}', 'kline_type': 'SWAP'}          # 永续合约
+    {'kline': '{"op":"subscribe","args":"futures/candle60s:{}"}', 'kline_type': 'CW'},    # 交割合约(当周 60s)
+    {'kline': '{"op":"subscribe","args":"swap/candle60s:{}"}', 'kline_type': 'SWAP'}          # 永续合约
   ]
-  kline_info_spot: [{'kline': '{"op":"subscribe","args":"spot/candle60s:{symbol}"}', 'kline_type': 'SPOT'}]    # 现货(1min)
+  kline_info_spot: [
+    {'kline': '{"op":"subscribe","args":"spot/candle60s:{symbol}"}', 'kline_type': 'SPOT'}
+  ]    # 现货(1min)
 
   utype: "deflate"
   proxy: "true"
