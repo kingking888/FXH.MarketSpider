@@ -19,6 +19,7 @@ class OkexSpider(object):
         self.redis_connect = redis.Redis(host="r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com", port=6379,
                                          password="20ab20!2#Spider!alxmH")
 
+        # 是否使用代理（如果为True，则代理按 127.0.0.1:8080-8232；如果为False，则不使用代理）
         self.proxies = True
 
         self.item_list = []
