@@ -41,7 +41,7 @@ class OkexDepthSpider(object):
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
-    def task_thread(self):
+    def task_thread(self, index):
         self.symbol = futures_info_dict[index]['pair1']
         self.coin = futures_info_dict[index]['pair2']
         self.depth_type = futures_info_dict[index]['timeid']
