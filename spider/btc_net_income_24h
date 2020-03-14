@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/big_trade_btc/btc_net_income_24h.py > logs/btc_net_income_24h.log 2>&1 &
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/big_trade_btc/btc_net_income_24h.py > logs/btc_net_income_24h.log 2>&1 &
 echo "启动完成..."
 exit
 

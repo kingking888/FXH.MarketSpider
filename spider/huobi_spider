@@ -1,7 +1,7 @@
 #!/bin/bash
-nohup /usr/bin/python3 -u /root/fxhspider/websocket_kline/huobipro_kline.py > logs/huobipro_kline.log 2>&1 & 
-nohup /usr/bin/python3 -u /root/fxhspider/websocket_trade/huobipro_trade.py > logs/huobipro_trade.log 2>&1 & 
-nohup /usr/bin/python3 -u /root/fxhspider/websocket_depth/huobipro_depth.py > logs/huobipro_depth.log 2>&1 &
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_kline/huobipro_kline.py > logs/huobipro_kline.log 2>&1 &
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_trade/huobipro_trade.py > logs/huobipro_trade.log 2>&1 &
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_depth/huobipro_depth.py > logs/huobipro_depth.log 2>&1 &
 echo "启动完成..."
 exit
 

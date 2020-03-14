@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/big_trade_btc/big_trade_btc_and_all.py > logs/big_trade_btc_and_all.log 2>&1 &
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/big_trade_btc/big_trade_btc_and_all.py > logs/big_trade_btc_and_all.log 2>&1 &
 echo "启动完成..."
 exit
 
