@@ -22,7 +22,7 @@
     - websocket_trade : 交易所 合约实时成交数据采集
     - websocket_trade_spot : 交易所 现货实时成交数据采集
 
-    - big_trade_btc : 大额转账big_trade_all 与 交易所24小时净流入BTC_NetIncome_24h 数据采集
+    - big_trade_btc : 大额转账big_trade_btc_and_all 与 交易所24小时净流入BTC_NetIncome_24h 数据采集
     - btc_halve : BTC减半行情相关数据采集
     - contract_open_interest : 各交易所持仓量 与 OKEx多空人数比采集
     - difference_in_price : 各交易所合约与现货价差 采集
