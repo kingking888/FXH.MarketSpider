@@ -14,7 +14,7 @@
         - common_conf: 设置存储数据的redis数据库信息
         - script_conf: 各交易所websocket采集参数配置信息
     - lib : 日志、递归堆栈溢出、配置文件读取处理相关
-    - logs : 存储临时日志（实时日志存储于 ./spider/logs/ 下）
+    - logs : 存储临时日志（实时日志存储于 spider/logs/ 下）
 
     - websocket_depth :交易所 合约深度数据采集
     - websocket_depth_spot : 交易所 现货深度数据采集
@@ -29,7 +29,7 @@
     - difference_in_price : 各交易所合约与现货价差 采集
     - liquidation : 交易所爆仓数据采集
 
-    - spider ： 该目录下保存了各个爬虫执行的shell脚本，将通过 nohup 命令进行后台运行，并保存日志到 ./logs/下
+    - spider ： 该目录下保存了各个爬虫执行的shell脚本，将通过 nohup 命令进行后台运行，并保存日志到 spider/logs/下
 
 ##### 2. 执行指定爬虫
     - 进入 spider/目录，如需启动某个爬虫，通过 ./ 执行即可，如 ./okex_spider 即可启动OKEx合约数据采集。
