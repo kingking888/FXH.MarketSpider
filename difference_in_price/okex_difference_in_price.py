@@ -75,7 +75,7 @@ class OkexSpider(object):
 
                 while True:
                     try:
-                        # self.redis_connect.lpush("okex:difference_in_price", json.dumps(data))
+                        self.redis_connect.lpush("okex:difference_in_price", json.dumps(data))
                         break
                     except:
                         self.redis_connect = redis.Redis(host="r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com",
