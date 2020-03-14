@@ -53,7 +53,12 @@ class OkexSpider(object):
                         item["Volume"] = int(data['size'])
                         item["USD"] = int(data['size']) * 100 if item["Pair1"] == 'BTC' else int(data['size']) * 10
 
-                        self.redis_connect.lpush(self.redis_key, json.dumps(item))
+                        while True:
+                            try:
+                                self.redis_connect.lpush(self.redis_key, json.dumps(item))
+                                break
+                            except:
+                                self.redis_connect = redis.Redis(host='47.107.228.85', port=6379, password='20ab20!2#Spider!alxmH')
 
                         self.last_time = t
                         logger.info(item)
