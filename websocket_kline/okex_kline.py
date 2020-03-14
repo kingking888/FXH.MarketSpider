@@ -292,4 +292,3 @@ if __name__ == "__main__":
         # 主线程等待子线程执行完毕
         for t in thread_list:
             t.join
-
