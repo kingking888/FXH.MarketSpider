@@ -1,0 +1,24 @@
+
+binance:
+  socket_url: "wss://fstream.binance.com/stream?streams={}@aggTrade"
+  socket_url_spot: "wss://stream.binance.com:9443/stream?streams={}@aggTrade"
+
+  pair_url: "https://fapi.binance.com/fapi/v1/exchangeInfo"
+  # pair_url_spot: "https://api.binance.com/api/v3/ticker/price"
+
+  trade_info_spot:  [
+      {"trade": "btcusdt", "trade_type": "SPOT", "symbol": "USDT"},
+      {"trade": "btctusd", "trade_type": "SPOT", "symbol": "TUSD"},
+      {"trade": "btcpax", "trade_type": "SPOT", "symbol": "PAX"},
+      {"trade": "btcusdc", "trade_type": "SPOT", "symbol": "USDC"},
+      {"trade": "btcusds", "trade_type": "SPOT", "symbol": "USDS"},
+      {"trade": "btcbbtc", "trade_type": "SPOT", "symbol": "BBTC"},
+      {"trade": "btcbusd", "trade_type": "SPOT", "symbol": "BUSD"},
+      {"trade": "btcngn", "trade_type": "SPOT", "symbol": "NGN"},
+      {"trade": "btcrub", "trade_type": "SPOT", "symbol": "RUB"},
+      {"trade": "btctry", "trade_type": "SPOT", "symbol": "TRY"}
+  ]
+  utype: "gzip"
+  proxy: "false"
+
+

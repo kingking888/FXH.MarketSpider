@@ -1,0 +1,12 @@
+coinbase:
+  socket_url_spot: "wss://ws-feed.pro.coinbase.com"
+
+  trade_info_spot:  [
+      {"trade" : '{"type": "subscribe", "channels": [{"name": "matches", "product_ids": ["BTC-USD"]}]}', "trade_type" : "SPOT", "symbol": "USD"},
+      {"trade" : '{"type": "subscribe", "channels": [{"name": "matches", "product_ids": ["BTC-EUR"]}]}', "trade_type" : "SPOT", "symbol": "EUR"},
+      {"trade" : '{"type": "subscribe", "channels": [{"name": "matches", "product_ids": ["BTC-GBP"]}]}', "trade_type" : "SPOT", "symbol": "GBP"},
+  ]
+
+  utype: "string"
+  proxy: "true"
+

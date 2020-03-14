@@ -1,0 +1,21 @@
+
+okex:
+  pair_url: "https://www.okex.com/v3/futures/pc/market/futuresCoin?currencyCode=0"
+  pair_url_spot: "https://www.okex.com/api/spot/v3/instruments"
+
+  socket_url: "wss://real.okex.com:8443/ws/v3"                          # websocket 链接地址
+
+  trade_info: [                                                                                         # 订阅 KLine 数据
+    {'trade': '{"op":"subscribe","args":"futures/trade:{symbol}-USD-{timeid}"}', 'trade_type': 'CW'},    # 交割合约(当周 60s)
+    {'trade': '{"op":"subscribe","args":"futures/trade:{symbol}-USD-{timeid}"}', 'trade_type': 'NW'},    # 交割合约(次周 60s)
+    {'trade': '{"op":"subscribe","args":"futures/trade:{symbol}-USD-{timeid}"}', 'trade_type': 'CQ'},    # 交割合约(季度 60s)
+    {'trade': '{"op":"subscribe","args":"futures/trade:{symbol}-USD-{timeid}"}', 'trade_type': 'NQ'},    # 交割合约(季度 60s)
+    {'trade': '{"op":"subscribe","args":"swap/trade:{symbol}-USD-{timeid}"}', 'trade_type': 'SWAP'}          # 永续合约
+  ]
+
+  trade_info_spot: [
+    {'trade': '{"op":"subscribe","args":"spot/trade:{symbol}"}', 'trade_type': 'SPOT'},    # 现货合约
+  ]
+
+  utype: "deflate"
+  proxy: "true"

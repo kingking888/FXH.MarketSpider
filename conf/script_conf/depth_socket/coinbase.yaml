@@ -1,0 +1,12 @@
+coinbase:
+  socket_url_spot: "wss://ws-feed.pro.coinbase.com"
+
+  depth_info_spot:  [
+      {"depth" : '{"type": "subscribe", "channels": [{"name": "matches", "product_ids": ["BTC-USD"]}]}', "depth_type" : "SPOT", "symbol": "USD"},
+      {"depth" : '{"type": "subscribe", "channels": [{"name": "matches", "product_ids": ["BTC-EUR"]}]}', "depth_type" : "SPOT", "symbol": "EUR"},
+      {"depth" : '{"type": "subscribe", "channels": [{"name": "matches", "product_ids": ["BTC-GBP"]}]}', "depth_type" : "SPOT", "symbol": "GBP"},
+  ]
+
+  utype: "string"
+  proxy: "true"
+

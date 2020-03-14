@@ -1,0 +1,8 @@
+#!/bin/bash
+nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/websocket_depth_spot/okex_depth_spot.py > logs/okex_depth_spot.log 2>&1 &
+nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/websocket_kline_spot/okex_kline_spot.py > logs/okex_kline_spot.log 2>&1 &
+nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/websocket_trade_spot/okex_trade_spot.py > logs/okex_trade_spot.log 2>&1 &
+echo "启动完成..."
+exit
+
+

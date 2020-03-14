@@ -1,0 +1,24 @@
+binance:
+  socket_url: "wss://fstream.binance.com/stream?streams={}@kline_1m"
+  socket_url_spot: "wss://stream.binance.com:9443/stream?streams={}@kline_1m"
+
+  pair_url: "https://fapi.binance.com/fapi/v1/exchangeInfo"
+  # pair_url_spot: "https://api.binance.com/api/v3/ticker/price"
+
+
+  kline_info_spot:  [
+      {"kline" : "btcusdt", "kline_type" : "SPOT", "symbol": "USDT"},
+      {"kline" : "btctusd", "kline_type" : "SPOT", "symbol": "TUSD"},
+      {"kline" : "btcpax", "kline_type" : "SPOT", "symbol": "PAX"},
+      {"kline" : "btcusdc", "kline_type" : "SPOT", "symbol": "USDC"},
+      {"kline" : "btcusds", "kline_type" : "SPOT", "symbol": "USDS"},
+      {"kline" : "btcbbtc", "kline_type" : "SPOT", "symbol": "BBTC"},
+      {"kline" : "btcbusd", "kline_type" : "SPOT", "symbol": "BUSD"},
+      {"kline" : "btcngn", "kline_type" : "SPOT", "symbol": "NGN"},
+      {"kline" : "btcrub", "kline_type" : "SPOT", "symbol": "RUB"},
+      {"kline" : "btctry", "kline_type" : "SPOT", "symbol": "TRY"},
+  ]
+
+  utype: "gzip"
+  proxy: "false"
+

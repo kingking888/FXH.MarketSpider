@@ -1,0 +1,8 @@
+#!/bin/bash
+nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/difference_in_price/huobipro_difference_in_price.py > logs/huobipro_difference_in_price.log 2>&1 &
+nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/difference_in_price/okex_difference_in_price.py > logs/okex_difference_in_price.log 2>&1 &
+nohup /usr/bin/python3 -u /root/feixiaohao/fxhspider/difference_in_price/binance_difference_in_price.py > logs/binance_difference_in_price.log 2>&1 &
+echo "启动完成..."
+exit
+
+

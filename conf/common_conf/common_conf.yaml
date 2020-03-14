@@ -1,0 +1,21 @@
+redis:
+    host: "r-j6ck5b0szhb54rdbrs.redis.rds.aliyuncs.com"
+    port: 6379
+    db: 0
+    password: "KPZ&rDII0A98"
+
+#redis:
+#    host: "13.115.208.122"
+#    port: 6379
+#    db: 0
+#    password: "fxhspider"
+#    socket_connect_timeout: 6000
+#    retry_on_timeout: 3
+
+
+#redis:
+#    host: "r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com"
+#    port: 6379
+#    db: 1
+#    password: "20ab20!2#Spider!alxmH"
+

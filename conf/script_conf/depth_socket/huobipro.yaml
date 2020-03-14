@@ -1,0 +1,21 @@
+huobipro:
+  pair_url: "https://dm.huobi.io/contract-order/x/v1/contract_product_info"            # 当前页面币种信息
+  pair_url_spot: "https://api.huobi.pro/v1/common/symbols"                             # 现货币种信息
+
+  socket_url: "wss://dm.huobi.io/ws"                                                   # websocket 链接地址
+  socket_url_spot: "wss://api.huobi.pro/ws"
+                                              # websocket 链接地址
+  depth_info: [                                                                    # 订阅 KLine 数据
+    {'depth': '{"sub":"market.{symbol}_CW.depth.step0"}', 'depth_type': 'CW'},         # 交割合约(当周 1min)
+    {'depth': '{"sub":"market.{symbol}_NW.depth.step0"}', 'depth_type': 'NW'},         # 交割合约(次周 1min)
+    {'depth': '{"sub":"market.{symbol}_CQ.depth.step0"}', 'depth_type': 'CQ'},         # 交割合约(季度 1min)
+  ]
+
+  depth_info_spot: [                                                                    # 订阅 KLine 数据
+    {'depth': '{"sub":"market.{symbol}.depth.step0"}', 'depth_type': 'SPOT'},         # 现货(1min)
+  ]
+
+  utype: "gzip"
+  proxy: "false"
+
+# "wss://api.huobi.pro/ws"

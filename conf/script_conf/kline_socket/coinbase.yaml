@@ -1,0 +1,13 @@
+coinbase:
+  # socket_url: "wss://fstream.binance.com/stream?streams={}@kline_1m"
+  socket_url_spot: "https://api.pro.coinbase.com/products/{}/candles/1m"
+
+  kline_info_spot:  [
+      {"kline" : "BTC-USD", "kline_type" : "SPOT", "symbol": "USD"},
+      {"kline" : "BTC-EUR", "kline_type" : "SPOT", "symbol": "EUR"},
+      {"kline" : "BTC-GBP", "kline_type" : "SPOT", "symbol": "GBP"},
+  ]
+
+  utype: "string"
+  proxy: "true"
+

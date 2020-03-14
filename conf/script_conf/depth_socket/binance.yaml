@@ -1,0 +1,22 @@
+binance:
+  socket_url: "wss://fstream.binance.com/stream?streams={}@depth20@100ms"
+  socket_url_spot: "wss://stream.binance.com:9443/stream?streams={}@depth20@100ms"
+
+  pair_url: "https://fapi.binance.com/fapi/v1/exchangeInfo"
+  # pair_url_spot: "https://api.binance.com/api/v3/ticker/price"
+
+  depth_info_spot:  [
+    {"depth": "btcusdt", "depth_type": "SPOT", "symbol": "USDT"},
+    {"depth": "btctusd", "depth_type": "SPOT", "symbol": "TUSD"},
+    {"depth": "btcpax", "depth_type": "SPOT", "symbol": "PAX"},
+    {"depth": "btcusdc", "depth_type": "SPOT", "symbol": "USDC"},
+    {"depth": "btcusds", "depth_type": "SPOT", "symbol": "USDS"},
+    {"depth": "btcbbtc", "depth_type": "SPOT", "symbol": "BBTC"},
+    {"depth": "btcbusd", "depth_type": "SPOT", "symbol": "BUSD"},
+    {"depth": "btcngn", "depth_type": "SPOT", "symbol": "NGN"},
+    {"depth": "btcrub", "depth_type": "SPOT", "symbol": "RUB"},
+    {"depth": "btctry", "depth_type": "SPOT", "symbol": "TRY"},
+  ]
+
+  utype: "gzip"
+  proxy: "false"
