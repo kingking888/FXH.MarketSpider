@@ -9,7 +9,6 @@
     3. 命令行输入 vi ~/.bash_profile 打开环境配置，输入 export PYTHONPATH=$PYTHONPATH:/root/FXH.MarketSpider/并保存退出，再通过命令行 source .bash_profile 生效，即配置好Python项目运行路径。
     
 ##### 1. 项目目录结构：
-
     - conf : 配置文件相关
         - common_conf: 设置存储数据的redis数据库信息
         - script_conf: 各交易所websocket采集参数配置信息
@@ -23,7 +22,7 @@
     - websocket_trade : 交易所 合约实时成交数据采集
     - websocket_trade_spot : 交易所 现货实时成交数据采集
 
-    - big_trade_btc : 大额转账 与 交易所24小时净流入数据采集
+    - big_trade_btc : 大额转账big_trade_all 与 交易所24小时净流入BTC_NetIncome_24h 数据采集
     - btc_halve : BTC减半行情相关数据采集
     - contract_open_interest : 各交易所持仓量 与 OKEx多空人数比采集
     - difference_in_price : 各交易所合约与现货价差 采集
