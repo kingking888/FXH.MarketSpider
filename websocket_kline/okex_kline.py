@@ -73,6 +73,7 @@ class OkexKlineSpider(object):
 
         # 获取数据：
         while True:
+            result = ""
             try:
                 if self.req != futures_info_dict[index]['kline']:
                     raise TypeError("{} 合约已经更新: {}，需要重新发送请求...".format(self.req, futures_info_dict[index]['kline']))
@@ -80,15 +81,15 @@ class OkexKlineSpider(object):
                 try:
                     result = ws.recv()
                     result = self.deflate_decode(result)
-                    self.save_result_redis(result)
-                    ws.send("ping")
                 except:
                     pass
-
-
+                if result != 'pong' and result != "":
+                    self.save_result_redis(result)
+                    ws.send("ping")
             except Exception as e:
-                logger.info(e)
-                logger.info("数字货币：{} {} {} 连接中断，reconnect.....".format(self.symbol,  self.coin, self.kline_type))
+                logger.error(result)
+                logger.error(e)
+                logger.error("数字货币：{} {} {} 连接中断，reconnect.....".format(self.symbol,  self.coin, self.kline_type))
                 # 如果连接中断，递归调用继续
                 self.task_thread(index)
 
