@@ -157,8 +157,13 @@ def get_liquidation():
 
             # proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
 
-            futures_list = requests.get(futures_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}).json()
-            futures_list += requests.get(swap_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}).json()
+            proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
+            logger.info(proxies)
+            futures_list = requests.get(futures_url, proxies=proxies).json()
+
+            proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
+            logger.info(proxies)
+            futures_list += requests.get(swap_url, proxies=proxies).json()
 
 
 
