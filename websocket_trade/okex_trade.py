@@ -197,7 +197,7 @@ def get_liquidation():
             time.sleep(30)
         except Exception as e:
             logger.error(e)
-            time.sleep(10)
+            time.sleep(30)
 
 
 if __name__ == "__main__":
