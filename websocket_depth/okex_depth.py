@@ -78,8 +78,8 @@ class OkexDepthSpider(object):
         while True:
             result = ""
             try:
-                if self.req != futures_info_dict[index]['kline']:
-                    raise TypeError("{} 合约已经更新: {}，需要重新发送请求...".format(self.req, futures_info_dict[index]['kline']))
+                if self.req != futures_info_dict[index]['depth']:
+                    raise TypeError("{} 合约已经更新: {}，需要重新发送请求...".format(self.req, futures_info_dict[index]['depth']))
 
                 try:
                     result = ws.recv()
