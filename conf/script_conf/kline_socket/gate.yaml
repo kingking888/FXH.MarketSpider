@@ -1,0 +1,22 @@
+gate:
+  # 当前页面币种信息，分为BTC结算合约和USDT结算合约
+  pair_url_list:
+    - 'https://fx-api.gateio.ws/api/v4/futures/btc/contracts'
+    - 'https://fx-api.gateio.ws/api/v4/futures/usdt/contracts'
+
+  # pair_url_spot: "https://api.huobi.pro/v1/common/symbols"                             # 现货币种信息
+
+  socket_url_btc: "wss://fx-ws.gateio.ws/v4/ws/btc"                                 # websocket 链接地址
+  socket_url_usdt: "wss://fx-ws.gateio.ws/v4/ws/usdt"                                 # websocket 链接地址
+
+  # socket_url_spot: "wss://api.huobi.pro/ws"
+
+  kline_info:                                                                  # 订阅 KLine 数据
+    {'kline': '{"time" : 123456, "channel" : "futures.candlesticks", "event": "subscribe", "payload" : ["1m", "{symbol}"]}', 'kline_type': 'SWAP'}         # 交割合约(当周 1min)
+
+
+#  kline_info_spot: [                                                                   # 订阅 KLine 数据
+#    {'kline': '{"sub":"market.{symbol}.kline.1min"}', 'kline_type': 'SPOT'},         # 现货(1min)
+#  ]
+  utype: "string"
+  proxy: "false"
