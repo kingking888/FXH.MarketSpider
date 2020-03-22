@@ -1,0 +1,8 @@
+#!/bin/bash
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_kline/gate_kline.py > logs/gate_kline.log 2>&1 &
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_depth/gate_depth.py > logs/gate_depth.log 2>&1 &
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_trade/gate_trade.py > logs/gate_trade.log 2>&1 &
+echo "启动完成..."
+exit
+
+
