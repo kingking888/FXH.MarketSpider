@@ -220,11 +220,16 @@ if __name__ == "__main__":
 
         if pair_url_spot:
             # 获取当前页面币种信息，目前huobi不需要代理，其他需要代理
-            if proxy == "true":
-                resp = requests.get(pair_url_spot, headers=headers, proxies=proxies).json()
-            else:
-                resp = requests.get(pair_url_spot, headers=headers).json()
-
+            while True:
+                try:
+                    # 获取当前页面币种信息，目前huobi不需要代理，其他需要代理
+                    if proxy == "true":
+                        resp = requests.get(pair_url_spot, headers=headers, proxies=proxies).json()
+                    else:
+                        resp = requests.get(pair_url_spot, headers=headers).json()
+                    break
+                except:
+                    pass
             #####################################################################
             # 获取所有币种信息（data 列表）
             data_list = resp
