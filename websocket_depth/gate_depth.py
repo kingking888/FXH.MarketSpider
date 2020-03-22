@@ -120,7 +120,7 @@ class GateDepthSpider(object):
             item["Buys"] = [[buys['p'], buys['s']] for buys in buys_list]   # 按价格降序[5, 4, 3, 2, 1]
             # print(item)
 
-            redis_key_name = "huobipro:futures:depth:{}_{}_depth_100".format(self.symbol, self.depth_type)
+            redis_key_name = "gate:futures:depth:{}_{}_depth_100".format(self.symbol, self.depth_type)
 
             # print(item)
             while True:

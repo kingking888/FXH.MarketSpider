@@ -15,4 +15,4 @@ gate:
 
   depth_unsub: '{"time" : 123456, "channel" : "futures.order_book", "event": "unsubscribe", "payload" : ["{symbol}", "20", "0"]}'
   utype: "string"
-  proxy: "true"
+  proxy: "false"

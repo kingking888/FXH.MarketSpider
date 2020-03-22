@@ -81,7 +81,7 @@ class CoinbaseKlineSpider(object):
             try:
                 redis_connect.lpush(redis_key_name, json.dumps(item))
                 redis_connect.lpush(redis_key_name2, json.dumps(item))
-                self.logger.info("push item: {}_{} {}".format(self.pair1, self.pair2, self.last_item))
+                self.logger.info("push item: {}_{} {}".format(self.pair1, self.pair2, item))
                 redis_connect.ltrim(redis_key_name, 0, 19999)
                 break
             except Exception as e:
