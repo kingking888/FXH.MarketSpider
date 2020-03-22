@@ -146,7 +146,7 @@ class MyThread(threading.Thread):
 
 
 
-def get_liquidation():
+def get_instruments():
     while True:
         try:
             futures_url = "https://www.okex.com/api/futures/v3/instruments"
@@ -238,7 +238,7 @@ if __name__ == "__main__":
         thread_list = []
 
 
-        t = MyThread(target=get_liquidation, args=())
+        t = MyThread(target=get_instruments, args=())
         thread_list.append(t)
         t.start()
 

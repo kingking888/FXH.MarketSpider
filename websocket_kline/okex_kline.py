@@ -129,14 +129,20 @@ class OkexKlineSpider(object):
                 while True:
                     try:
                         redis_connect.lpush(redis_key_name, json.dumps(self.last_item))
-                        self.logger.info(self.last_item)
+                        self.logger.info("push item: {}".format(self.last_item))
                         self.last_item = item
                         break
                     except Exception as e:
                         self.logger.error(e)
             else:
-                print(result)
-                raise ValueError("Redis data error: item time little to last_item time.")
+                redis_connect.lpop(redis_key_name)
+                while True:
+                    try:
+                        redis_connect.lpush(redis_key_name, json.dumps(item))
+                        self.logger.info("update item: {}".format(item))
+                        break
+                    except Exception as e:
+                        self.logger.error("Push Error: {}".format(e))
 
 
 class MyThread(threading.Thread):
@@ -149,7 +155,7 @@ class MyThread(threading.Thread):
         self.target(*self.args)
 
 
-def get_liquidation():
+def get_instruments():
     while True:
         try:
             futures_url = "https://www.okex.com/api/futures/v3/instruments"
@@ -243,7 +249,7 @@ if __name__ == "__main__":
         thread_list = []
 
 
-        t = MyThread(target=get_liquidation, args=())
+        t = MyThread(target=get_instruments, args=())
         thread_list.append(t)
         t.start()
 

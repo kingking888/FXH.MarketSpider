@@ -13,7 +13,7 @@ from loguru import logger
 
 
 # 是否使用代理（如果为True，则代理按 127.0.0.1:8080-8232；如果为False，则不使用代理）
-proxies = False
+proxies = True
 
 liquidation_info_dict = []
 last_liquidation_info_dict = []

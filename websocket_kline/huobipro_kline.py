@@ -133,14 +133,20 @@ class HuobiProKlineSpider(object):
                     try:
                         redis_connect.lpush(redis_key_name, json.dumps(self.last_item))
                         redis_connect.ltrim(redis_key_name, 0, 19999)
+                        self.logger.info("push item: {}".format(self.last_item))
                         self.last_item = item
-                        self.logger.info("push item")
                         break
                     except Exception as e:
                         self.logger.error("Push Error: {}".format(e))
             else:
-                self.logger.info(result)
-                raise ValueError("Redis data error: item time little to last_item time.")
+                redis_connect.lpop(redis_key_name)
+                while True:
+                    try:
+                        redis_connect.lpush(redis_key_name, json.dumps(item))
+                        self.logger.info("update item: {}".format(item))
+                        break
+                    except Exception as e:
+                        self.logger.error("Push Error: {}".format(e))
 
 
 class MyThread(threading.Thread):
