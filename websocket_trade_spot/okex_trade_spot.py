@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 try:
                     # 获取当前页面币种信息，目前huobi不需要代理，其他需要代理
                     if proxy == "true":
-                        resp = requests.get(pair_url_spot, headers=headers, proxies=proxies).json()
+                        resp = requests.get(pair_url_spot, headers=headers, proxies={"https": "https://127.0.0.1:{}".format(random.randint(8080, 8323))}).json()
                     else:
                         resp = requests.get(pair_url_spot, headers=headers).json()
                     break
