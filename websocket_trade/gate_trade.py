@@ -16,19 +16,18 @@ from lib.config_manager import Config
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
-class GateKlineSpider(object):
-    def __init__(self, logger, symbol, exchange, req, kline_type):
+class GateTradeSpider(object):
+    def __init__(self, logger, symbol, exchange, req, trade_type):
         self.logger = logger
         self.symbol = symbol
         self.exchange = exchange
         self.req = req
-        self.kline_type = kline_type
-        self.last_item = None
+        self.trade_type = trade_type
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
     def task_thread(self):
-        self.logger.info('数字货币：{} {} 数据获取开始时间：{}'.format(self.symbol, self.kline_type, time.strftime("%Y-%m-%d %H:%M:%S")))
+        self.logger.info('数字货币：{} {} 数据获取开始时间：{}'.format(self.symbol, self.trade_type, time.strftime("%Y-%m-%d %H:%M:%S")))
 
         # 反复尝试建立websocket连接
         while True:
@@ -46,11 +45,11 @@ class GateKlineSpider(object):
                 break
             except Exception as e:
                 self.logger.error(e)
-                self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.kline_type))
+                self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.trade_type))
                 time.sleep(1)
 
 
-        logger.info("数字货币： {} {} connect success".format(self.symbol, self.kline_type))
+        logger.info("数字货币： {} {} connect success".format(self.symbol, self.trade_type))
         # 获取数据加密类型（gzip）
         utype = self.exchange.get("utype")
 
@@ -61,7 +60,7 @@ class GateKlineSpider(object):
         # 获取数据：
         while True:
             try:
-                # 设置 websocket 超时时间, 时间太久会导致 kline 一分钟没数据，因目前交易所采集稳定暂时不设置
+                # 设置 websocket 超时时间, 时间太久会导致 trade 一分钟没数据，因目前交易所采集稳定暂时不设置
                 # ws.settimeout(30)
                 # 接收websocket响应
                 result = ws.recv()
@@ -92,7 +91,7 @@ class GateKlineSpider(object):
             except Exception as e:
                 logger.error(e)
                 logger.error(result)
-                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
+                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
                 # 如果连接中断，递归调用继续
                 self.task_thread()
 
@@ -101,51 +100,41 @@ class GateKlineSpider(object):
         result = json.loads(result)
 
         if result['event'] == 'update':
-            # [{'t': 1584859920, 'v': 0, 'c': '6344.4', 'h': '6344.4', 'l': '6344.4', 'o': '6344.4', 'n': '1m_BTC_USD'}]}
+            # [{"size":228,"id":4190122,"create_time":1584876392,"price":"6167.7","contract":"BTC_USD"}]
             info_list = result['result']
 
             for info in info_list:
                 item = {}
-                item["Time"] = info.get("t")
+                item["Time"] = int(str(info.get("create_time")) + str(int(time.time() * 1000))[-3:])
+                # 成交id
+                item['ID'] = str(info.get("id"))
                 #item["Pair1"] = self.symbol
                 #item["Pair2"] = "USD"
-                #item["Title"] = self.kline_type
-                item["Open"] = info.get("o")
-                item["Close"] = info.get("c")
-                item["High"] = info.get("h")
-                item["Low"] = info.get("l")
-                item["Amount"] = 0
-                item["Volume"] = info.get("v")
+                #item["Title"] = self.trade_type
+                # 成交价
+                item["Price"] = float(info.get("price"))
+                # 主动成交方向 ( 0买  1卖)
+                item["Direction"] = int(0 if info.get("size") > 0 else 1)
+                # Amount 成交量(币)，买卖双边成交量之和
+                item["Amount"] = float(info.get("vol") if info.get("vol") else 0)
+                # Volume 成交量(张)，买卖双边成交量之和
+                item["Volume"] = abs(info.get("size") if info.get("size") else 0)
                 # print(item)
 
-                redis_key_name = "gate:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
+                redis_key_name = "gate:futures:trade:{}_{}_trade_detail".format(self.symbol, self.trade_type)
                 # now_time = int(time.time() / 60) * 60
 
-                if self.last_item is None:
-                    self.last_item = item
-
-                if item["Time"] == self.last_item["Time"]:
-                    # print("----Same time, save new item: ", item)
-                    self.last_item = item
-                elif item["Time"] > self.last_item["Time"]:
-                    while True:
-                        try:
-                            redis_connect.lpush(redis_key_name, json.dumps(self.last_item))
-                            # redis_connect.ltrim(redis_key_name, 0, 19999)
-                            self.logger.info("push item: {} {}".format(self.symbol, self.last_item))
-                            self.last_item = item
-                            break
-                        except Exception as e:
-                            self.logger.error("Push Error: {}".format(e))
-                else:
-                    redis_connect.lpop(redis_key_name)
-                    while True:
-                        try:
-                            redis_connect.lpush(redis_key_name, json.dumps(item))
-                            self.logger.info("update item: {} {}".format(self.symbol, item))
-                            break
-                        except Exception as e:
-                            self.logger.error("Push Error: {}".format(e))
+                while True:
+                    try:
+                        redis_connect.lpush(redis_key_name, json.dumps(item))
+                        # self.logger.info(item)
+                        # self.last_item = item
+                        # if int(time.time()) % 5 == 0:
+                        #     self.logger.info("push item")
+                        redis_connect.ltrim(redis_key_name, 0, 19999)
+                        break
+                    except Exception as e:
+                        self.logger.error(e)
 
 
 class MyThread(threading.Thread):
@@ -160,7 +149,7 @@ class MyThread(threading.Thread):
 
 if __name__ == "__main__":
     # k线 logger日志
-    logger = Logger.get_logger("gate_kline_log")
+    logger = Logger.get_logger("gate_trade_log")
     # 获取代码目录绝对路径
     last_dir = os.path.abspath(os.path.dirname(os.getcwd()))
     print(last_dir)
@@ -174,8 +163,8 @@ if __name__ == "__main__":
     redis_connect = redis.Redis(**redis_conf)
     logger.info("redis初始化成功.")
 
-    # 创建 conf/script_conf/kline_socket/heyue.yaml 配置对象
-    script_path = '{}/conf/script_conf/kline_socket/gate.yaml'.format(last_dir)
+    # 创建 conf/script_conf/trade_socket/heyue.yaml 配置对象
+    script_path = '{}/conf/script_conf/trade_socket/gate.yaml'.format(last_dir)
     script_config = Config(script_path)
 
     # 获取所有交易所的 采集配置
@@ -184,7 +173,7 @@ if __name__ == "__main__":
     # 是否需要使用代理（目前huobi不需要代理）
     proxy = exchange.get("proxy")
     pair_url_list = exchange.get("pair_url_list")
-    kline_info = exchange.get("kline_info")
+    trade_info = exchange.get("trade_info")
 
     # 代理和requests报头
     proxies = {
@@ -214,13 +203,13 @@ if __name__ == "__main__":
         #####################################################################
 
         # 获取所有k线采集方案(3次)
-        #for kline_info in kline_info_list:
+        #for trade_info in trade_info_list:
         # 迭代每个币种，并构建该币种k线 websocket请求(9次)
         for symbol in symbol_list:
-            kline_type = kline_info.get('kline_type')
-            kline = kline_info.get('kline')
-            req = "{" + kline[1: -1].format(symbol=symbol) + "}"
-            spider = GateKlineSpider(logger, symbol, exchange, req, kline_type)
+            trade_type = trade_info.get('trade_type')
+            trade = trade_info.get('trade')
+            req = "{" + trade[1: -1].format(symbol=symbol) + "}"
+            spider = GateTradeSpider(logger, symbol, exchange, req, trade_type)
             t = MyThread(target=spider.task_thread, args=())
             thread_list.append(t)
             t.start()

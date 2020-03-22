@@ -10,8 +10,9 @@ gate:
   socket_url_usdt: "wss://fx-ws.gateio.ws/v4/ws/usdt"                                 # websocket 链接地址
 
 
-  kline_info:                                                                  # 订阅 KLine 数据
-    {'kline': '{"time" : 123456, "channel" : "futures.candlesticks", "event": "subscribe", "payload" : ["1m", "{symbol}"]}', 'kline_type': 'SWAP'}         # 交割合约(当周 1min)
+  depth_info:                                                                  # 订阅 KLine 数据
+    {'depth': '{"time" : 123456, "channel" : "futures.order_book", "event": "subscribe", "payload" : ["{symbol}", "20", "0"]}', 'depth_type': 'SWAP'}         # 交割合约(当周 1min)
 
+  depth_unsub: '{"time" : 123456, "channel" : "futures.order_book", "event": "unsubscribe", "payload" : ["{symbol}", "20", "0"]}'
   utype: "string"
   proxy: "true"

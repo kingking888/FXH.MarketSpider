@@ -16,55 +16,58 @@ from lib.config_manager import Config
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
-class GateKlineSpider(object):
-    def __init__(self, logger, symbol, exchange, req, kline_type):
+class GateDepthSpider(object):
+    def __init__(self, logger, symbol, exchange, req, depth_type):
         self.logger = logger
         self.symbol = symbol
         self.exchange = exchange
         self.req = req
-        self.kline_type = kline_type
-        self.last_item = None
+        self.depth_type = depth_type
+        self.unreq = self.exchange.get("depth_unsub")
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
     def task_thread(self):
-        self.logger.info('数字货币：{} {} 数据获取开始时间：{}'.format(self.symbol, self.kline_type, time.strftime("%Y-%m-%d %H:%M:%S")))
-
-        # 反复尝试建立websocket连接
-        while True:
-            try:
-                # 是否需要使用代理（目前huobi不需要代理）
-                proxy = self.exchange.get("proxy")
-                # 获取建立websocket的请求链接
-                # 区分 USDT结算合约 和 BTC结算合约
-                socket_url = self.exchange.get("socket_url_usdt") if "USDT" in self.symbol else self.exchange.get("socket_url_btc")
-
-                if proxy == "true":
-                    ws = create_connection(socket_url, http_proxy_host="127.0.0.1", http_proxy_port=random.randint(8080, 8323))
-                else:
-                    ws = create_connection(socket_url)
-                break
-            except Exception as e:
-                self.logger.error(e)
-                self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.kline_type))
-                time.sleep(1)
-
-
-        logger.info("数字货币： {} {} connect success".format(self.symbol, self.kline_type))
-        # 获取数据加密类型（gzip）
-        utype = self.exchange.get("utype")
-
-        # 发送了各币种的各k线的websocket请求
-        print("req:", self.req)
-        ws.send(self.req)
+        self.logger.info('数字货币：{} {} 数据获取开始时间：{}'.format(self.symbol, self.depth_type, time.strftime("%Y-%m-%d %H:%M:%S")))
 
         # 获取数据：
         while True:
+            # 反复尝试建立websocket连接
+            while True:
+                try:
+                    # 是否需要使用代理（目前huobi不需要代理）
+                    proxy = self.exchange.get("proxy")
+                    # 获取建立websocket的请求链接
+                    # 区分 USDT结算合约 和 BTC结算合约
+                    socket_url = self.exchange.get("socket_url_usdt") if "USDT" in self.symbol else self.exchange.get("socket_url_btc")
+
+                    if proxy == "true":
+                        ws = create_connection(socket_url, http_proxy_host="127.0.0.1", http_proxy_port=random.randint(8080, 8323))
+                    else:
+                        ws = create_connection(socket_url)
+                    break
+                except Exception as e:
+                    self.logger.error(e)
+                    self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.depth_type))
+                    time.sleep(1)
+
+
+            # logger.info("数字货币： {} {} connect success".format(self.symbol, self.depth_type))
+            # 获取数据加密类型（gzip）
+            utype = self.exchange.get("utype")
+
+            # 发送了各币种的各k线的websocket请求
+            # print("req:", self.req)
+            ws.send(self.req)
+
+
             try:
-                # 设置 websocket 超时时间, 时间太久会导致 kline 一分钟没数据，因目前交易所采集稳定暂时不设置
+                # 设置 websocket 超时时间, 时间太久会导致 depth 一分钟没数据，因目前交易所采集稳定暂时不设置
                 # ws.settimeout(30)
                 # 接收websocket响应
                 result = ws.recv()
+                result = ws.recv()
+
                 # 加密方式 gzip
                 if utype == 'gzip':
                     try:
@@ -89,10 +92,13 @@ class GateKlineSpider(object):
                     # self.logger.info(result)
                     self.save_result_redis(result)
 
+                ws.send("{" + self.unreq[1: -1].format(symbol=self.symbol) + "}")
+                time.sleep(2)
+
             except Exception as e:
                 logger.error(e)
                 logger.error(result)
-                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
+                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
                 # 如果连接中断，递归调用继续
                 self.task_thread()
 
@@ -100,52 +106,33 @@ class GateKlineSpider(object):
     def save_result_redis(self, result):
         result = json.loads(result)
 
-        if result['event'] == 'update':
+        if result['event'] == 'all':
             # [{'t': 1584859920, 'v': 0, 'c': '6344.4', 'h': '6344.4', 'l': '6344.4', 'o': '6344.4', 'n': '1m_BTC_USD'}]}
-            info_list = result['result']
 
-            for info in info_list:
-                item = {}
-                item["Time"] = info.get("t")
-                #item["Pair1"] = self.symbol
-                #item["Pair2"] = "USD"
-                #item["Title"] = self.kline_type
-                item["Open"] = info.get("o")
-                item["Close"] = info.get("c")
-                item["High"] = info.get("h")
-                item["Low"] = info.get("l")
-                item["Amount"] = 0
-                item["Volume"] = info.get("v")
-                # print(item)
+            item = {}
+            item["Time"] = result.get("time")
+            #item["Pair1"] = self.symbol
+            #item["Pair2"] = "USD"
+            #item["Title"] = self.depth_type
+            sells_list = result.get("result").get("asks")
+            item["Sells"] = [[sells['p'], sells['s']] for sells in sells_list]  # 按价格升序[6, 7, 8, 9, 10]
+            buys_list = result.get("result").get("bids")[::-1]
+            item["Buys"] = [[buys['p'], buys['s']] for buys in buys_list]   # 按价格降序[5, 4, 3, 2, 1]
+            # print(item)
 
-                redis_key_name = "gate:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
-                # now_time = int(time.time() / 60) * 60
+            redis_key_name = "huobipro:futures:depth:{}_{}_depth_100".format(self.symbol, self.depth_type)
 
-                if self.last_item is None:
-                    self.last_item = item
-
-                if item["Time"] == self.last_item["Time"]:
-                    # print("----Same time, save new item: ", item)
-                    self.last_item = item
-                elif item["Time"] > self.last_item["Time"]:
-                    while True:
-                        try:
-                            redis_connect.lpush(redis_key_name, json.dumps(self.last_item))
-                            # redis_connect.ltrim(redis_key_name, 0, 19999)
-                            self.logger.info("push item: {} {}".format(self.symbol, self.last_item))
-                            self.last_item = item
-                            break
-                        except Exception as e:
-                            self.logger.error("Push Error: {}".format(e))
-                else:
-                    redis_connect.lpop(redis_key_name)
-                    while True:
-                        try:
-                            redis_connect.lpush(redis_key_name, json.dumps(item))
-                            self.logger.info("update item: {} {}".format(self.symbol, item))
-                            break
-                        except Exception as e:
-                            self.logger.error("Push Error: {}".format(e))
+            # print(item)
+            while True:
+                try:
+                    redis_connect.lpush(redis_key_name, json.dumps(item))
+                    # print(item)
+                    # if int(time.time()) % 5 == 0:
+                    #     self.logger.info("push item")
+                    redis_connect.ltrim(redis_key_name, 0, 19999)
+                    break
+                except Exception as e:
+                    self.logger.error("PushError: {}".format(e))
 
 
 class MyThread(threading.Thread):
@@ -160,7 +147,7 @@ class MyThread(threading.Thread):
 
 if __name__ == "__main__":
     # k线 logger日志
-    logger = Logger.get_logger("gate_kline_log")
+    logger = Logger.get_logger("gate_depth_log")
     # 获取代码目录绝对路径
     last_dir = os.path.abspath(os.path.dirname(os.getcwd()))
     print(last_dir)
@@ -174,8 +161,8 @@ if __name__ == "__main__":
     redis_connect = redis.Redis(**redis_conf)
     logger.info("redis初始化成功.")
 
-    # 创建 conf/script_conf/kline_socket/heyue.yaml 配置对象
-    script_path = '{}/conf/script_conf/kline_socket/gate.yaml'.format(last_dir)
+    # 创建 conf/script_conf/depth_socket/heyue.yaml 配置对象
+    script_path = '{}/conf/script_conf/depth_socket/gate.yaml'.format(last_dir)
     script_config = Config(script_path)
 
     # 获取所有交易所的 采集配置
@@ -184,7 +171,7 @@ if __name__ == "__main__":
     # 是否需要使用代理（目前huobi不需要代理）
     proxy = exchange.get("proxy")
     pair_url_list = exchange.get("pair_url_list")
-    kline_info = exchange.get("kline_info")
+    depth_info = exchange.get("depth_info")
 
     # 代理和requests报头
     proxies = {
@@ -214,13 +201,13 @@ if __name__ == "__main__":
         #####################################################################
 
         # 获取所有k线采集方案(3次)
-        #for kline_info in kline_info_list:
+        #for depth_info in depth_info_list:
         # 迭代每个币种，并构建该币种k线 websocket请求(9次)
         for symbol in symbol_list:
-            kline_type = kline_info.get('kline_type')
-            kline = kline_info.get('kline')
-            req = "{" + kline[1: -1].format(symbol=symbol) + "}"
-            spider = GateKlineSpider(logger, symbol, exchange, req, kline_type)
+            depth_type = depth_info.get('depth_type')
+            depth = depth_info.get('depth')
+            req = "{" + depth[1: -1].format(symbol=symbol) + "}"
+            spider = GateDepthSpider(logger, symbol, exchange, req, depth_type)
             t = MyThread(target=spider.task_thread, args=())
             thread_list.append(t)
             t.start()
