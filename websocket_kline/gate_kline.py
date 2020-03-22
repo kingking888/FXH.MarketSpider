@@ -133,7 +133,7 @@ class GateKlineSpider(object):
                         try:
                             redis_connect.lpush(redis_key_name, json.dumps(self.last_item))
                             # redis_connect.ltrim(redis_key_name, 0, 19999)
-                            self.logger.info("push item: {}".format(self.last_item))
+                            self.logger.info("push item: {} {}".format(self.symbol, self.last_item))
                             self.last_item = item
                             break
                         except Exception as e:
@@ -143,7 +143,7 @@ class GateKlineSpider(object):
                     while True:
                         try:
                             redis_connect.lpush(redis_key_name, json.dumps(item))
-                            self.logger.info("update item: {}".format(item))
+                            self.logger.info("update item: {} {}".format(self.symbol, item))
                             break
                         except Exception as e:
                             self.logger.error("Push Error: {}".format(e))
@@ -217,7 +217,7 @@ if __name__ == "__main__":
         # 获取所有k线采集方案(3次)
         #for kline_info in kline_info_list:
         # 迭代每个币种，并构建该币种k线 websocket请求(9次)
-        for symbol in symbol_list[:1]:
+        for symbol in symbol_list:
             kline_type = kline_info.get('kline_type')
             kline = kline_info.get('kline')
             req = "{" + kline[1: -1].format(symbol=symbol) + "}"

@@ -156,7 +156,7 @@ class OkexKlineSpider(object):
                     try:
                         redis_connect.lpush(redis_key_name, json.dumps(self.last_item))
                         redis_connect.lpush(redis_key_name2, json.dumps(self.last_item))
-                        self.logger.info("push item: {}".format(self.last_item))
+                        self.logger.info("push item: {}_{} {}".format(self.pair1, self.pair2, self.last_item))
                         self.last_item = item
                         break
                     except Exception as e:
@@ -168,7 +168,7 @@ class OkexKlineSpider(object):
                     try:
                         redis_connect.lpush(redis_key_name, json.dumps(item))
                         redis_connect.lpush(redis_key_name2, json.dumps(item))
-                        self.logger.info("update item: {}".format(item))
+                        self.logger.info("update item: {}_{} {}".format(self.pair1, self.pair2, self.item))
                         break
                     except Exception as e:
                         self.logger.error("Push Error: {}".format(e))
