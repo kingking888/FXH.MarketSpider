@@ -61,8 +61,8 @@ class GateKlineSpider(object):
         ws.send(self.req)
 
         # 获取数据：
-        while True:
-            try:
+        try:
+            while True:
                 # 设置 websocket 超时时间, 时间太久会导致 kline 一分钟没数据，因目前交易所采集稳定暂时不设置
                 # ws.settimeout(30)
                 # 接收websocket响应
@@ -91,12 +91,12 @@ class GateKlineSpider(object):
                     # self.logger.info(result)
                     self.save_result_redis(result)
 
-            except Exception as e:
-                logger.error(e)
-                logger.error(result)
-                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
-                # 如果连接中断，递归调用继续
-                self.task_thread()
+        except Exception as e:
+            logger.error(e)
+            logger.error(result)
+            logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
+            # 如果连接中断，递归调用继续
+            self.task_thread()
 
 
     def save_result_redis(self, result):
