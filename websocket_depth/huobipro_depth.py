@@ -98,12 +98,13 @@ class HuobiProDepthSpider(object):
 
         except Exception as e:
             self.logger.error(e)
-            self.logger.info(result)
+            # self.logger.info(result)
             ws.close()
             gc.collect()
             self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
             # 如果连接中断，递归调用继续
             self.task_thread()
+            self.first_run = True
 
     def save_result_redis(self, result):
         result = json.loads(result)

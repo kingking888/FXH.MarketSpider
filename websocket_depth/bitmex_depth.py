@@ -52,7 +52,7 @@ class BitmexDepthSpider(object):
                 time.sleep(5)
             except Exception as e:
                 self.logger.error(e)
-                self.logger.error(result)
+                # self.logger.error(result)
                 self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.depth_type))
                 gc.collect()
                 time.sleep(1)

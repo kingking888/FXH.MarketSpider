@@ -27,6 +27,7 @@ class GateDepthSpider(object):
         self.req = req
         self.depth_type = depth_type
         self.unreq = self.exchange.get("depth_unsub")
+        self.first_run = True
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
@@ -53,9 +54,11 @@ class GateDepthSpider(object):
                     self.logger.error(e)
                     self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.depth_type))
                     time.sleep(1)
+                    self.first_run = True
 
-
-            logger.info("数字货币： {} {} connect success".format(self.symbol, self.depth_type))
+            if self.first_run:
+                logger.info("数字货币： {} {} connect success".format(self.symbol, self.depth_type))
+                self.first_run = False
             # 获取数据加密类型（gzip）
             utype = self.exchange.get("utype")
 
@@ -100,13 +103,13 @@ class GateDepthSpider(object):
 
             except Exception as e:
                 self.logger.error(e)
-                self.logger.error(result)
+                # self.logger.error(result)
                 ws.close()
                 gc.collect()
                 self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
                 # 如果连接中断，递归调用继续
                 self.task_thread()
-
+                self.first_run = True
 
     def save_result_redis(self, result):
         result = json.loads(result)

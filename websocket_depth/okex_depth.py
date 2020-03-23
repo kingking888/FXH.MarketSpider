@@ -93,7 +93,7 @@ class OkexDepthSpider(object):
 
         except Exception as e:
             self.logger.error(e)
-            self.logger.error(result)
+            # self.logger.error(result)
             self.logger.error("数字货币：{} {} {} 连接中断，reconnect.....".format(self.symbol,  self.coin, self.depth_type))
             ws.close()
             gc.collect()
