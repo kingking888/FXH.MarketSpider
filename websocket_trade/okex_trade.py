@@ -197,7 +197,7 @@ def get_instruments():
                 last_futures_info_dict = futures_info_dict
                 for futures_info in futures_info_dict.items():
                     logger.info(futures_info)
-            time.sleep(30)
+            time.sleep(60)
         except Exception as e:
             logger.error(e)
             time.sleep(30)
