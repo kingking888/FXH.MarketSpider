@@ -14,4 +14,4 @@ gate:
     {'kline': '{"time" : 123456, "channel" : "futures.candlesticks", "event": "subscribe", "payload" : ["1m", "{symbol}"]}', 'kline_type': 'SWAP'}         # 交割合约(当周 1min)
 
   utype: "string"
-  proxy: "true"
+  proxy: "false"

@@ -14,4 +14,4 @@ gate:
     {'trade': '{"time" : 123456, "channel" : "futures.trades", "event": "subscribe", "payload" : ["{symbol}"]}', 'trade_type': 'SWAP'}         # 交割合约(当周 1min)
 
   utype: "string"
-  proxy: "true"
+  proxy: "false"
