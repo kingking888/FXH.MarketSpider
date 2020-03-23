@@ -339,7 +339,6 @@ def get_instruments():
                     logger.info(futures_info)
             time.sleep(60)
         except Exception as e:
-            logger.error(e)
             time.sleep(30)
 
 
