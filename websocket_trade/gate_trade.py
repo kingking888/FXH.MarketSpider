@@ -110,13 +110,17 @@ class GateTradeSpider(object):
 
 
                 # Amount 成交量(USD/USDT)
-                if "USDT" in self.symbol:
+                if self.symbol == 'BTC_USD':
+                    # BTC_USD 每张1美元
+                    item["Amount"] = item["Volume"]
+                elif "USDT" in self.symbol:
                     # USDT合约：Amount（USDT） = 成交价 * volume * 转换系数
                     item["Amount"] = float("%.2f" % (item["Price"] * item["Volume"] * self.multiplier))
                 else:
                     # USD合约：Amount（USD） = 成交价 * volume * 转换系数 * btc_index_price
                     global btc_index_price
                     item['Amount'] = float("%.2f" % (item["Price"] * item["Volume"] * self.multiplier * btc_index_price))
+
                 # print(item)
 
                 redis_key_name = "gate-io:futures:trade:{}_{}_trade_detail".format(self.symbol, self.trade_type)
@@ -124,12 +128,12 @@ class GateTradeSpider(object):
 
                 while True:
                     try:
-                        redis_connect.lpush(redis_key_name, json.dumps(item))
+                        #redis_connect.lpush(redis_key_name, json.dumps(item))
                         # self.logger.info(item)
                         # self.last_item = item
                         # if int(time.time()) % 5 == 0:
                         #     self.logger.info("push item")
-                        redis_connect.ltrim(redis_key_name, 0, 19999)
+                        #redis_connect.ltrim(redis_key_name, 0, 19999)
                         break
                     except Exception as e:
                         self.logger.error(e)

@@ -115,17 +115,15 @@ class GateDepthSpider(object):
         result = json.loads(result)
 
         if result['event'] == 'all':
-            # [{'t': 1584859920, 'v': 0, 'c': '6344.4', 'h': '6344.4', 'l': '6344.4', 'o': '6344.4', 'n': '1m_BTC_USD'}]}
-
             item = {}
             item["Time"] = result.get("time")
             #item["Pair1"] = self.symbol
             #item["Pair2"] = "USD"
             #item["Title"] = self.depth_type
             sells_list = result.get("result").get("asks")
-            item["Sells"] = [[sells['p'], sells['s']] for sells in sells_list]  # 按价格升序[6, 7, 8, 9, 10]
+            item["Sells"] = [[float(sells['p']), float(sells['s'])] for sells in sells_list]  # 按价格升序[6, 7, 8, 9, 10]
             buys_list = result.get("result").get("bids")[::-1]
-            item["Buys"] = [[buys['p'], buys['s']] for buys in buys_list]   # 按价格降序[5, 4, 3, 2, 1]
+            item["Buys"] = [[float(buys['p']), float(buys['s'])] for buys in buys_list]   # 按价格降序[5, 4, 3, 2, 1]
             # print(item)
 
             redis_key_name = "gate-io:futures:depth:{}_{}_depth_100".format(self.symbol, self.depth_type)
