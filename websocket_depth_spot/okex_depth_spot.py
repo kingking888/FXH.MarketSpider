@@ -75,56 +75,24 @@ class OkexDepthSpider(object):
         ws.send(self.req)
 
         # 获取数据：
-        while True:
-            try:
-                try:
-                    # 设置 websocket 超时时间, 时间太久会导致 depth 一分钟没数据，因目前交易所采集稳定暂时不设置
-                    ws.settimeout(20)
-                    # 接收websocket响应
-                    result = ws.recv()
-                except:
-                    print("req:", self.req)
-                    # ws.send(self.req)
-                    ws.send("ping")
-                    continue
+        try:
+            while True:
+                data = ws.recv()
+                if data != '':
+                    result = self.deflate_decode(data)
+                    if result != 'pong':
+                        self.save_result_redis(result)
+                    else:
+                        time.sleep(0.1)
+                ws.send("ping")
 
-                # 加密方式 gzip
-                if utype == 'gzip':
-                    try:
-                        result = gzip.decompress(result).decode('utf-8')
-                    except:
-                        pass
-                # 加密方式 deflate
-                elif utype == "deflate":
-                    try:
-                        decompress = zlib.decompressobj(-zlib.MAX_WBITS)
-                        inflated = decompress.decompress(result)
-                        inflated += decompress.flush()
-                        result = inflated.decode("utf-8")
-                    except:
-                        pass
-
-                # 加密方式 未加密
-                elif utype == "string":
-                    pass
-
-                # 如果websocket响应是 pong
-                if result == 'pong':
-                    # 则继续获取响应，保持连接
-                    self.logger.info(result)
-                else:
-                    # self.logger.info(result)
-                    self.save_result_redis(result)
-
-            except Exception as e:
-                logger.info(e)
-                logger.info("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
-                ws.close()
-                del ws
-                gc.collect()
-                # 如果连接中断，递归调用继续
-                time.sleep(60)
-                self.task_thread()
+        except Exception as e:
+            logger.info(e)
+            logger.info("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
+            # 如果连接中断，递归调用继续
+            ws.close()
+            gc.collect()
+            self.task_thread()
 
     def save_result_redis(self, result):
         result = json.loads(result)
