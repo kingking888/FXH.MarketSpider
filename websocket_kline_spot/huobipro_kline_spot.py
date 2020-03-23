@@ -246,9 +246,7 @@ if __name__ == "__main__":
                 t = MyThread(target=spider.task_thread, args=())
                 thread_list.append(t)
                 t.start()
-                print(index)
-
-
+                time.sleep(0.2)
 
     while True:
         length = len(threading.enumerate())

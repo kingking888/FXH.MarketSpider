@@ -1,2 +1,2 @@
-ps -aux | grep -E "huobipro|okex|binance|bitmex|coinbase|btc|PID" | grep -v "grep"
+ps -aux | grep -E "huobipro|okex|binance|bitmex|coinbase|gate|btc|PID" | grep -v "grep"
 

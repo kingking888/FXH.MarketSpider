@@ -220,6 +220,7 @@ if __name__ == "__main__":
                 t = MyThread(target=spider.task_thread, args=())
                 thread_list.append(t)
                 t.start()
+                time.sleep(0.2)
         time.sleep(1)
 
     while True:

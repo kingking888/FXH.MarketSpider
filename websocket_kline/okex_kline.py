@@ -265,6 +265,7 @@ if __name__ == "__main__":
                     t = MyThread(target=spider.task_thread, args=(index,))
                     thread_list.append(t)
                     t.start()
+                    time.sleep(0.2)
                 break
             time.sleep(1)
 

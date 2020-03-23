@@ -210,9 +210,6 @@ if __name__ == "__main__":
 
 
     # 代理和requests报头
-    proxies = {
-        "https": "https://127.0.0.1:8080",
-    }
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36',
         'source': 'web'
@@ -225,10 +222,11 @@ if __name__ == "__main__":
         resp_list = []
         # 获取当前页面币种信息，目前huobi不需要代理，其他需要代理
         for pair_url in pair_url_list:
-            if proxy == "true":
-                resp_list += requests.get(pair_url, headers=headers, proxies=proxies).json()
-            else:
-                resp_list += requests.get(pair_url, headers=headers).json()
+            # if proxy == "true":
+            #     resp_list += requests.get(pair_url, headers=headers, proxies={"https": "https://127.0.0.1:{}".format(8080, 8323)}).json()
+            # else:
+            #     resp_list += requests.get(pair_url, headers=headers).json()
+            resp_list += requests.get(pair_url, headers=headers).json()
 
         #####################################################################
         # 获取所有合约币种信息 与 转换乘数 [['ZEC_USDT', '0.01'], ['EOS_USDT', '1'], ['BCH_USDT', '0.01'], ['BCH_USD', '0.000001']]
@@ -252,6 +250,7 @@ if __name__ == "__main__":
             t = MyThread(target=spider.task_thread, args=())
             thread_list.append(t)
             t.start()
+            time.sleep(0.2)
         time.sleep(1)
 
     while True:

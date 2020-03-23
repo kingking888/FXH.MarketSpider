@@ -1,6 +1,8 @@
 #!/bin/bash
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_kline/okex_kline.py > logs/okex_kline.log 2>&1 &
+sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_depth/okex_depth.py > logs/okex_depth.log 2>&1 &
+sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_trade/okex_trade.py > logs/okex_trade.log 2>&1 &
 echo "启动完成..."
 exit

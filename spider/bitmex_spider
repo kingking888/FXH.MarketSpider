@@ -1,8 +1,12 @@
 #!/bin/bash
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_kline/bitmex_kline.py > logs/bitmex_kline.log 2>&1 &
+sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_depth/bitmex_depth.py > logs/bitmex_depth.log 2>&1 &
+sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_trade/bitmex_trade1.py > logs/bitmex_trade1.log 2>&1 &
+sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_trade/bitmex_trade2.py > logs/bitmex_trade2.log 2>&1 &
+sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/websocket_trade/bitmex_trade3.py > logs/bitmex_trade3.log 2>&1 &
 echo "启动完成..."
 exit
