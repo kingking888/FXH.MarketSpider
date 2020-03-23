@@ -1,16 +1,18 @@
+
 import time
 import os
 import redis
-import gzip
-import zlib
 import threading
 import json
 import requests
 import random
-from websocket import create_connection
-from lib.decorator import tail_call_optimized
+import gc
+
 from lib.logger import Logger
 from lib.config_manager import Config
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class BinanceDepthSpider(object):
@@ -45,61 +47,13 @@ class BinanceDepthSpider(object):
                     # ws = create_connection(socket_url)
                 # break
                 self.save_result_redis(result)
-                time.sleep(0.5)
+                time.sleep(5)
             except Exception as e:
                 self.logger.error(e)
+                self.logger.error(result)
                 self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.depth_type))
+                gc.collect()
                 time.sleep(3)
-
-        # logger.info("数字货币： {} {} connect success".format(self.symbol, self.depth_type))
-        # 获取数据加密类型（gzip）
-        # utype = self.exchange.get("utype")
-
-
-        # 发送了各币种的各k线的websocket请求
-        # print("req:", self.req)
-        # ws.send(self.req)
-        #
-        # # 获取数据：
-        # while True:
-        #     try:
-        #         # 设置 websocket 超时时间, 时间太久会导致 depth 一分钟没数据，因目前交易所采集稳定暂时不设置
-        #         # ws.settimeout(30)
-        #         # 接收websocket响应
-        #         result = ws.recv()
-        #         # 加密方式 gzip
-        #         if utype == 'gzip':
-        #             try:
-        #                 result = gzip.decompress(result).decode('utf-8')
-        #             except:
-        #                 pass
-        #         # 加密方式 deflate
-        #         elif utype == "deflate":
-        #             decompress = zlib.decompressobj(-zlib.MAX_WBITS)
-        #             inflated = decompress.decompress(result)
-        #             inflated += decompress.flush()
-        #             result = inflated.decode()
-        #         # 加密方式 未加密
-        #         elif utype == "string":
-        #             pass
-        #
-        #         # 如果websocket响应是 ping
-        #         if result[:7] == '{"ping"':
-        #             # 则构建 pong 回复给服务器，保持连接
-        #             ts = result[8:21]
-        #             pong = '{"pong":' + ts + '}'
-        #             ws.send(pong)
-        #             # ws.send(depthStr_depth)
-        #         else:
-        #             self.logger.info(result)
-        #             self.save_result_redis(result)
-        #
-        #     except Exception as e:
-        #         logger.info(e)
-        #         logger.info("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
-        #         # 如果连接中断，递归调用继续
-        #         self.task_thread()
-
 
     def save_result_redis(self, result):
         data = result.json()

@@ -1,3 +1,4 @@
+
 import time
 import os
 import redis
@@ -7,6 +8,7 @@ import threading
 import json
 import requests
 import random
+import gc
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -15,6 +17,7 @@ from lib.config_manager import Config
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
+
 
 class GateDepthSpider(object):
     def __init__(self, logger, symbol, exchange, req, depth_type):
@@ -93,12 +96,14 @@ class GateDepthSpider(object):
                     self.save_result_redis(result)
 
                 ws.send("{" + self.unreq[1: -1].format(symbol=self.symbol) + "}")
-                time.sleep(2)
+                time.sleep(5)
 
             except Exception as e:
-                logger.error(e)
-                logger.error(result)
-                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
+                self.logger.error(e)
+                self.logger.error(result)
+                ws.close()
+                gc.collect()
+                self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
                 # 如果连接中断，递归调用继续
                 self.task_thread()
 
@@ -120,7 +125,7 @@ class GateDepthSpider(object):
             item["Buys"] = [[buys['p'], buys['s']] for buys in buys_list]   # 按价格降序[5, 4, 3, 2, 1]
             # print(item)
 
-            redis_key_name = "gate:futures:depth:{}_{}_depth_100".format(self.symbol, self.depth_type)
+            redis_key_name = "gate-io:futures:depth:{}_{}_depth_100".format(self.symbol, self.depth_type)
 
             # print(item)
             while True:

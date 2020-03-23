@@ -1,3 +1,4 @@
+
 import time
 import os
 import redis
@@ -5,17 +6,18 @@ import gzip
 import zlib
 import threading
 import json
-import requests
+import gc
 import random
-import ssl
-ssl._create_default_https_context = ssl._create_unverified_context
 
 from datetime import datetime
-
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
 from lib.logger import Logger
 from lib.config_manager import Config
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 
 class BitmexKlineSpider(object):
     def __init__(self, logger, symbol, exchange, req, trade_type):
@@ -60,17 +62,8 @@ class BitmexKlineSpider(object):
         ws.send(self.req)
 
         # 获取数据：
-        while True:
-            try:
-                # try:
-                #     # 设置 websocket 超时时间, 时间太久会导致 trade 一分钟没数据，因目前交易所采集稳定暂时不设置
-                #     ws.settimeout(10)
-                #     # 接收websocket响应
-                #     result = ws.recv()
-                # except:
-                #     ws.send("ping")
-                #     # ws.send(self.req)
-                #     print(self.symbol, ": ping")
+        try:
+            while True:
                 #     continue
                 result = ws.recv()
                 # 加密方式 gzip
@@ -104,11 +97,13 @@ class BitmexKlineSpider(object):
                     # self.logger.info(result)
                     self.save_result_redis(result)
 
-            except Exception as e:
-                logger.info(e)
-                logger.info("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
-                # 如果连接中断，递归调用继续
-                self.task_thread()
+        except Exception as e:
+            self.logger.error(e)
+            self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
+            ws.close()
+            gc.collect()
+            # 如果连接中断，递归调用继续
+            self.task_thread()
 
 
     def save_result_redis(self, result):

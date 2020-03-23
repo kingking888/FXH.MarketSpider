@@ -1,3 +1,4 @@
+
 import time
 import os
 import redis
@@ -15,6 +16,7 @@ from lib.config_manager import Config
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
+
 
 class GateKlineSpider(object):
     def __init__(self, logger, symbol, exchange, req, kline_type):
@@ -118,7 +120,7 @@ class GateKlineSpider(object):
                 item["Volume"] = info.get("v")
                 # print(item)
 
-                redis_key_name = "gate:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
+                redis_key_name = "gate-io:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
                 # now_time = int(time.time() / 60) * 60
 
                 if self.last_item is None:

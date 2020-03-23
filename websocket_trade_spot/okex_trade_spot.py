@@ -1,10 +1,8 @@
 
 import time
 from datetime import datetime
-from datetime import timedelta
 import os
 import redis
-import gzip
 import zlib
 import threading
 import json
@@ -17,7 +15,9 @@ from lib.decorator import tail_call_optimized
 from lib.logger import Logger
 from lib.config_manager import Config
 
-# memony 56MB ~ 60MB  -> 64MB
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 
 class OkexTradeSpider(object):
     def __init__(self, logger, symbol, exchange, req, trade_type, pair1, pair2):
@@ -86,12 +86,13 @@ class OkexTradeSpider(object):
                 ws.send("ping")
 
         except Exception as e:
-            logger.info(e)
-            logger.info("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
+            self.logger.error(e)
+            self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
             ws.close()
             gc.collect()
             # 如果连接中断，递归调用继续
             self.task_thread()
+
 
     def save_result_redis(self, result):
         result = json.loads(result)

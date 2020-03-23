@@ -1,6 +1,6 @@
+
 import time
 from datetime import datetime
-from datetime import timedelta
 import os
 import redis
 import gzip
@@ -16,8 +16,9 @@ from lib.decorator import tail_call_optimized
 from lib.logger import Logger
 from lib.config_manager import Config
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
-# memony 56MB ~ 60MB  -> 64MB
 
 class OkexDepthSpider(object):
     def __init__(self, logger, symbol, exchange, req, depth_type, pair1, pair2):
@@ -87,8 +88,8 @@ class OkexDepthSpider(object):
                 ws.send("ping")
 
         except Exception as e:
-            logger.info(e)
-            logger.info("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
+            self.logger.error(e)
+            self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
             # 如果连接中断，递归调用继续
             ws.close()
             gc.collect()

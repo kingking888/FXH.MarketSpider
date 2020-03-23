@@ -1,16 +1,18 @@
+
 import time
 import os
 import redis
-import gzip
-import zlib
 import threading
 import json
 import requests
 import random
-from websocket import create_connection
-from lib.decorator import tail_call_optimized
+import gc
+
 from lib.logger import Logger
 from lib.config_manager import Config
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class BinanceDepthSpider(object):
@@ -47,6 +49,7 @@ class BinanceDepthSpider(object):
             except Exception as e:
                 self.logger.error(e)
                 self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.depth_type))
+                gc.collect()
                 time.sleep(3)
 
 

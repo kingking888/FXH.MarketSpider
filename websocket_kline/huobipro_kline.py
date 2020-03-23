@@ -1,3 +1,4 @@
+
 import time
 import os
 import redis
@@ -7,6 +8,7 @@ import threading
 import json
 import requests
 import random
+import gc
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -15,6 +17,7 @@ from lib.config_manager import Config
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
+
 
 class HuobiProKlineSpider(object):
     def __init__(self, logger, symbol, exchange, req, kline_type):
@@ -92,9 +95,11 @@ class HuobiProKlineSpider(object):
                     self.save_result_redis(result)
 
             except Exception as e:
-                logger.error(e)
-                logger.error(result)
-                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
+                self.logger.error(e)
+                self.logger.error(result)
+                self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
+                ws.close()
+                gc.collect()
                 # 如果连接中断，递归调用继续
                 self.task_thread()
 

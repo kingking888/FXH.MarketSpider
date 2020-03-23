@@ -1,21 +1,21 @@
+
 import time
 import os
 import redis
-import gzip
-import zlib
+import gc
 import threading
 import json
-import decimal
-import traceback
+
 import requests
 import random
-from datetime import datetime
 
-
-from websocket import create_connection
 from lib.decorator import tail_call_optimized
 from lib.logger import Logger
 from lib.config_manager import Config
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 
 class BitmexDepthSpider(object):
     def __init__(self, logger, symbol, exchange, req, depth_type):
@@ -49,10 +49,12 @@ class BitmexDepthSpider(object):
 
                 # break
                 self.save_result_redis(result)
-                time.sleep(1)
+                time.sleep(5)
             except Exception as e:
                 self.logger.error(e)
+                self.logger.error(result)
                 self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.depth_type))
+                gc.collect()
                 time.sleep(1)
 
 

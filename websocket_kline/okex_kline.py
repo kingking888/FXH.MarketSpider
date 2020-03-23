@@ -1,20 +1,21 @@
+
 import time
 import os
 import redis
-import gzip
 import zlib
 import threading
 import json
 import requests
 import gc
 import random
-from datetime import datetime
-from datetime import timedelta
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
 from lib.logger import Logger
 from lib.config_manager import Config
+
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 futures_info_dict = []
@@ -87,12 +88,13 @@ class OkexKlineSpider(object):
                 ws.send("ping")
 
         except Exception as e:
-            logger.error(e)
-            logger.error("数字货币：{} {} {} 连接中断，reconnect.....".format(self.symbol,  self.coin, self.kline_type))
+            self.logger.error(e)
+            self.logger.error(result)
+            self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.kline_type))
             ws.close()
             gc.collect()
             # 如果连接中断，递归调用继续
-            self.task_thread(index)
+            self.task_thread()
 
 
     def save_result_redis(self, result):

@@ -1,9 +1,8 @@
+
 import time
 from datetime import datetime
-from datetime import timedelta
 import os
 import redis
-import gzip
 import zlib
 import threading
 import json
@@ -16,6 +15,10 @@ from lib.decorator import tail_call_optimized
 from lib.logger import Logger
 from lib.config_manager import Config
 
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+
 futures_info_dict = []
 last_futures_info_dict = []
 
@@ -25,7 +28,6 @@ class OkexTradeSpider(object):
         self.logger = logger
         self.exchange = exchange
         self.last_item = None
-
 
     @staticmethod
     def deflate_decode(result):
@@ -86,13 +88,12 @@ class OkexTradeSpider(object):
                 ws.send("ping")
 
         except Exception as e:
-            logger.error(e)
-            logger.error("数字货币：{} {} {} 连接中断，reconnect.....".format(self.symbol,  self.coin, self.trade_type))
+            self.logger.error(e)
+            self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
             ws.close()
             gc.collect()
             # 如果连接中断，递归调用继续
-            self.task_thread(index)
-
+            self.task_thread()
 
 
     def save_result_redis(self, result):
@@ -119,7 +120,6 @@ class OkexTradeSpider(object):
                 # volume: 成交量(张)，买卖双边成交量之和
                 item["Volume"] = float(data.get("qty") if data.get("qty") else data.get("size"))
                 # print(item)
-
 
                 redis_key_name = "okex:futures:trade:{}_{}_{}_trade_detail".format(self.symbol, self.coin, self.trade_type)
 

@@ -1,3 +1,4 @@
+
 import time
 import os
 import redis
@@ -7,13 +8,15 @@ import threading
 import json
 import requests
 import random
+import gc
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
 from lib.logger import Logger
 from lib.config_manager import Config
+
 import ssl
-# ssl._create_default_https_context = ssl._create_unverified_context
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 class HuobiProDepthSpider(object):
@@ -59,8 +62,8 @@ class HuobiProDepthSpider(object):
         ws.send(self.req)
 
         # 获取数据：
-        while True:
-            try:
+        try:
+            while True:
                 # 设置 websocket 超时时间, 时间太久会导致 depth 一分钟没数据，因目前交易所采集稳定暂时不设置
                 # ws.settimeout(30)
                 # 接收websocket响应
@@ -93,12 +96,14 @@ class HuobiProDepthSpider(object):
                     # self.logger.info(result)
                     self.save_result_redis(result)
 
-            except Exception as e:
-                logger.error(e)
-                # logger.info(result)
-                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
-                # 如果连接中断，递归调用继续
-                self.task_thread()
+        except Exception as e:
+            self.logger.error(e)
+            self.logger.info(result)
+            ws.close()
+            gc.collect()
+            self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.depth_type))
+            # 如果连接中断，递归调用继续
+            self.task_thread()
 
     def save_result_redis(self, result):
         result = json.loads(result)

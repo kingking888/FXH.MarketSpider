@@ -1,3 +1,4 @@
+
 import time
 import os
 import redis
@@ -7,6 +8,7 @@ import threading
 import json
 import requests
 import random
+import gc
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -16,13 +18,18 @@ from lib.config_manager import Config
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
+
+# 记录实时的BTC指数价
+btc_index_price = 0
+
 class GateTradeSpider(object):
-    def __init__(self, logger, symbol, exchange, req, trade_type):
+    def __init__(self, logger, symbol, exchange, req, trade_type, multiplier):
         self.logger = logger
         self.symbol = symbol
         self.exchange = exchange
         self.req = req
         self.trade_type = trade_type
+        self.multiplier = multiplier
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
@@ -58,8 +65,8 @@ class GateTradeSpider(object):
         ws.send(self.req)
 
         # 获取数据：
-        while True:
-            try:
+        try:
+            while True:
                 # 设置 websocket 超时时间, 时间太久会导致 trade 一分钟没数据，因目前交易所采集稳定暂时不设置
                 # ws.settimeout(30)
                 # 接收websocket响应
@@ -88,12 +95,13 @@ class GateTradeSpider(object):
                     # self.logger.info(result)
                     self.save_result_redis(result)
 
-            except Exception as e:
-                logger.error(e)
-                logger.error(result)
-                logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
-                # 如果连接中断，递归调用继续
-                self.task_thread()
+        except Exception as e:
+            self.logger.error(e)
+            self.logger.error("数字货币：{} {} 连接中断，reconnect.....".format(self.symbol, self.trade_type))
+            ws.close()
+            gc.collect()
+            # 如果连接中断，递归调用继续
+            self.task_thread()
 
 
     def save_result_redis(self, result):
@@ -115,13 +123,21 @@ class GateTradeSpider(object):
                 item["Price"] = float(info.get("price"))
                 # 主动成交方向 ( 0买  1卖)
                 item["Direction"] = int(0 if info.get("size") > 0 else 1)
-                # Amount 成交量(币)，买卖双边成交量之和
-                item["Amount"] = float(info.get("vol") if info.get("vol") else 0)
                 # Volume 成交量(张)，买卖双边成交量之和
                 item["Volume"] = abs(info.get("size") if info.get("size") else 0)
+
+
+                # Amount 成交量(USD/USDT)
+                if "USDT" in self.symbol:
+                    # USDT合约：Amount（USDT） = 成交价 * volume * 转换系数
+                    item["Amount"] = float(item["Price"] * item["Volume"] * self.multiplier)
+                else:
+                    # USD合约：Amount（USD） = 成交价 * volume * 转换系数 * btc_index_price
+                    global btc_index_price
+                    item['Amount'] = float(item["Price"] * item["Volume"] * self.multiplier * btc_index_price)
                 # print(item)
 
-                redis_key_name = "gate:futures:trade:{}_{}_trade_detail".format(self.symbol, self.trade_type)
+                redis_key_name = "gate-io:futures:trade:{}_{}_trade_detail".format(self.symbol, self.trade_type)
                 # now_time = int(time.time() / 60) * 60
 
                 while True:
@@ -135,6 +151,21 @@ class GateTradeSpider(object):
                         break
                     except Exception as e:
                         self.logger.error(e)
+
+
+def get_index_price():
+    while True:
+        try:
+            ws = create_connection("wss://fx-ws.gateio.ws/v4/ws/btc")
+            ws.send('{"time" : 123456, "channel" : "futures.tickers", "event": "unsubscribe", "payload" : ["BTC_USD"]}')
+            while True:
+                data = ws.recv()
+                if data.get('event') == 'update':
+                    # {"result":[{"contract":"BTC_USD","last":"6259.6","change_percentage":"3.82","funding_rate":"0.0001","mark_price":"6354.45","index_price":"6354.21","total_size":"5572326","volume_24h":"3293727","quanto_base_rate":"","volume_24h_usd":"3293727","volume_24h_btc":"518","funding_rate_indicative":"0.0001","volume_24h_quote":"3293727","volume_24h_settle":"526","volume_24h_base":"526"}]}
+                    global btc_index_price
+                    btc_index_price = data.get("result")[0].get("index_price")
+        except Exception as e:
+            logger.error(e)
 
 
 class MyThread(threading.Thread):
@@ -175,6 +206,9 @@ if __name__ == "__main__":
     pair_url_list = exchange.get("pair_url_list")
     trade_info = exchange.get("trade_info")
 
+
+
+
     # 代理和requests报头
     proxies = {
         "https": "https://127.0.0.1:8080",
@@ -197,19 +231,24 @@ if __name__ == "__main__":
                 resp_list += requests.get(pair_url, headers=headers).json()
 
         #####################################################################
-        # 获取所有合约币种信息（data 列表）
-        symbol_list = [resp['name'] for resp in resp_list]
+        # 获取所有合约币种信息 与 转换乘数 [['ZEC_USDT', '0.01'], ['EOS_USDT', '1'], ['BCH_USDT', '0.01'], ['BCH_USD', '0.000001']]
+        symbol_list = [[resp['name'], float(resp['quanto_multiplier'])] for resp in resp_list]
         print(symbol_list)
         #####################################################################
+
+        t = MyThread(target=get_index_price, args=())
+        thread_list.append(t)
+        t.start()
+        time.sleep(1)
 
         # 获取所有k线采集方案(3次)
         #for trade_info in trade_info_list:
         # 迭代每个币种，并构建该币种k线 websocket请求(9次)
-        for symbol in symbol_list:
+        for symbol, multiplier in symbol_list:
             trade_type = trade_info.get('trade_type')
             trade = trade_info.get('trade')
             req = "{" + trade[1: -1].format(symbol=symbol) + "}"
-            spider = GateTradeSpider(logger, symbol, exchange, req, trade_type)
+            spider = GateTradeSpider(logger, symbol, exchange, req, trade_type, multiplier)
             t = MyThread(target=spider.task_thread, args=())
             thread_list.append(t)
             t.start()
