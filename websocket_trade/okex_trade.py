@@ -153,14 +153,12 @@ def get_instruments():
             swap_url = "https://www.okex.com/api/swap/v3/instruments"
 
             # proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
+            futures_list = requests.get(futures_url).json()
 
-            proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
-            logger.info(proxies)
-            futures_list = requests.get(futures_url, proxies=proxies).json()
+            # proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
+            futures_list += requests.get(swap_url).json()
 
-            proxies = {"https": "http://127.0.0.1:{}".format(random.randint(8080, 8323))}
-            logger.info(proxies)
-            futures_list += requests.get(swap_url, proxies=proxies).json()
+            logger.info("> > > 获取合约列表成功 < < <")
 
             futures_trade = '{"op":"subscribe","args":"futures/trade:instrument_id"}'
             swap_trade = '{"op":"subscribe","args":"swap/trade:instrument_id"}'
@@ -196,6 +194,7 @@ def get_instruments():
             if last_futures_info_dict != futures_info_dict:
                 last_futures_info_dict = futures_info_dict
                 for futures_info in futures_info_dict.items():
+                    logger.info("> > > 最新合约列表已更新 < < < ")
                     logger.info(futures_info)
             time.sleep(60)
         except Exception as e:
