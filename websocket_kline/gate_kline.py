@@ -204,10 +204,11 @@ if __name__ == "__main__":
         resp_list = []
         # 获取当前页面币种信息，目前huobi不需要代理，其他需要代理
         for pair_url in pair_url_list:
-            if proxy == "true":
-                resp_list += requests.get(pair_url, headers=headers, proxies=proxies).json()
-            else:
-                resp_list += requests.get(pair_url, headers=headers).json()
+            # if proxy == "true":
+            #     resp_list += requests.get(pair_url, headers=headers, proxies=proxies).json()
+            # else:
+            #     resp_list += requests.get(pair_url, headers=headers).json()
+            resp_list += requests.get(pair_url, headers=headers).json()
 
         #####################################################################
         # 获取所有合约币种信息（data 列表）
