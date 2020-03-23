@@ -55,7 +55,7 @@ class GateDepthSpider(object):
                     time.sleep(1)
 
 
-            # logger.info("数字货币： {} {} connect success".format(self.symbol, self.depth_type))
+            logger.info("数字货币： {} {} connect success".format(self.symbol, self.depth_type))
             # 获取数据加密类型（gzip）
             utype = self.exchange.get("utype")
 

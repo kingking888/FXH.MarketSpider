@@ -146,7 +146,7 @@ def get_index_price():
                 if data.get('event') == 'update':
                     # {"result":[{"contract":"BTC_USD","last":"6259.6","change_percentage":"3.82","funding_rate":"0.0001","mark_price":"6354.45","index_price":"6354.21","total_size":"5572326","volume_24h":"3293727","quanto_base_rate":"","volume_24h_usd":"3293727","volume_24h_btc":"518","funding_rate_indicative":"0.0001","volume_24h_quote":"3293727","volume_24h_settle":"526","volume_24h_base":"526"}]}
                     global btc_index_price
-                    btc_index_price = data.get("result")[0].get("index_price")
+                    btc_index_price = float(data.get("result")[0].get("index_price"))
                     logger.info(" > > > 当前 BTC 指数价为 : {} < < <".format(btc_index_price))
         except Exception as e:
             logger.error(e)
