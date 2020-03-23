@@ -128,12 +128,12 @@ class GateTradeSpider(object):
 
                 while True:
                     try:
-                        #redis_connect.lpush(redis_key_name, json.dumps(item))
+                        redis_connect.lpush(redis_key_name, json.dumps(item))
                         # self.logger.info(item)
                         # self.last_item = item
                         # if int(time.time()) % 5 == 0:
                         #     self.logger.info("push item")
-                        #redis_connect.ltrim(redis_key_name, 0, 19999)
+                        redis_connect.ltrim(redis_key_name, 0, 19999)
                         break
                     except Exception as e:
                         self.logger.error(e)
