@@ -26,13 +26,14 @@ class BitmexSpider(object):
                     time.sleep(0.9)
                     continue
 
-                symbol_list = requests.get(self.info_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))}).json()['symbols']
-                now_symbol_list = [symbol for symbol in symbol_list if "XBT" in symbol]
-                print(now_symbol_list)
+                instrument_info = requests.get(self.info_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))}).json()
+                # now_symbol_list = [symbol for symbol in symbol_list if "XBT" in symbol]
+                xbt_instrument_info = {symbol: interval for symbol, interval in zip(instrument_info.get("symbols"), instrument_info.get("intervals")) if "XBT" in symbol}
+                print(xbt_instrument_info)
 
-                for symbol in now_symbol_list:
+                for symbol in xbt_instrument_info:
                     response = requests.get(self.url + symbol, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
-                    self.parse_response(response, ts)
+                    self.parse_response(response, ts, xbt_instrument_info, symbol)
 
                 logger.info("采集结束，一分钟后再次采集...")
                 time.sleep(20)
@@ -41,15 +42,16 @@ class BitmexSpider(object):
                 logger.error(e)
                 logger.error("正在重新发送请求...")
 
-    def parse_response(self, response, ts):
+    def parse_response(self, response, ts, xbt_instrument_info, symbol):
         data = response.json()[0]
+        interval = xbt_instrument_info[symbol]
         item = {}
         item['Time'] = ts
-        if data['symbol'] == "XBTUSD":
+        if "perpetual" in interval:
             item['Title'] = "SWAP"
-        elif data['symbol'] == "XBTH20":
+        elif "quarterly" in interval:
             item['Title'] = "CQ"
-        elif data['symbol'] == "XBTM20":
+        elif "biquarterly" in interval:
             item['Title'] = "NQ"
 
         item['Pair1'] = "XBT"

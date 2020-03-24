@@ -54,7 +54,7 @@ def send_request():
 
                 redis_connect.set(redis_key, json.dumps(data))
                 logger.info("Push: {}".format(data))
-
+            break
         except Exception as e:
             logger.error(e)
 
