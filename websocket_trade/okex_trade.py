@@ -93,7 +93,7 @@ class OkexTradeSpider(object):
             ws.close()
             gc.collect()
             # 如果连接中断，递归调用继续
-            self.task_thread()
+            self.task_thread(index)
 
 
     def save_result_redis(self, result):
