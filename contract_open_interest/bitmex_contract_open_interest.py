@@ -49,10 +49,11 @@ class BitmexSpider(object):
         item['Time'] = ts
         if "perpetual" in interval:
             item['Title'] = "SWAP"
-        elif "quarterly" in interval:
-            item['Title'] = "CQ"
         elif "biquarterly" in interval:
             item['Title'] = "NQ"
+        #elif "biquarterly" in interval:
+        else:
+            item['Title'] = "CQ"
 
         item['Pair1'] = "XBT"
         item['Pair2'] = 'USD'
