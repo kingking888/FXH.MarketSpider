@@ -86,7 +86,7 @@ class OkexSpider(object):
         redis_key_name = "okex:futures:open_interest:{}_{}".format(item["Pair1"], item['Title'])
         while True:
             try:
-                #self.redis_connect.lpush(redis_key_name, json.dumps(item))
+                self.redis_connect.lpush(redis_key_name, json.dumps(item))
                 logger.info(f"push: {item}")
                 break
             except:
