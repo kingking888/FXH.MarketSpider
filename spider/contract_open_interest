@@ -7,6 +7,8 @@ sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/contract_open_interest/binance_contract_open_interest.py > logs/binance_contract_open_interest.log 2>&1 &
 sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/contract_open_interest/bitmex_contract_open_interest.py > logs/bitmex_contract_open_interest.log 2>&1 &
+sleep 3
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/contract_open_interest/gate_contract_open_interest.py > logs/gate_contract_open_interest.log 2>&1 &
 echo "启动完成..."
 exit
 

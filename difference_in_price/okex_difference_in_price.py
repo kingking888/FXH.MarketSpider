@@ -58,24 +58,24 @@ class OkexSpider(object):
 
                 data = {
                     "Time": int(time.time() * 1000),
-                    "BTC_CW": float("%.2f" % (btc_cw_price - btc_spot_price)),
-                    "BTC_NW": float("%.2f" % (btc_nw_price - btc_spot_price)),
-                    "BTC_CQ": float("%.2f" % (btc_cq_price - btc_spot_price)),
-                    "BTC_NQ": float("%.2f" % (btc_nq_price - btc_spot_price)),
-                    "BTC_SWAP": float("%.2f" % (btc_swap_price - btc_spot_price)),
+                    "CW": float("%.2f" % (btc_cw_price - btc_spot_price)),
+                    "NW": float("%.2f" % (btc_nw_price - btc_spot_price)),
+                    "CQ": float("%.2f" % (btc_cq_price - btc_spot_price)),
+                    "NQ": float("%.2f" % (btc_nq_price - btc_spot_price)),
+                    "SWAP": float("%.2f" % (btc_swap_price - btc_spot_price)),
                     "Price": {
-                        "btc_spot_price": btc_spot_price,
-                        "btc_cw_price": btc_cw_price,
-                        "btc_nw_price": btc_nw_price,
-                        "btc_cq_price": btc_cq_price,
-                        "btc_nq_price": btc_nq_price,
-                        "btc_swap_price": btc_swap_price
+                        "SPOT": btc_spot_price,
+                        "CW": btc_cw_price,
+                        "NW": btc_nw_price,
+                        "CQ": btc_cq_price,
+                        "NQ": btc_nq_price,
+                        "SWAP": btc_swap_price
                     }
                 }
 
                 while True:
                     try:
-                        self.redis_connect.lpush("okex:difference_in_price", json.dumps(data))
+                        self.redis_connect.lpush("okex:btc:usd:difference_in_price", json.dumps(data))
                         break
                     except:
                         self.redis_connect = redis.Redis(host="r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com",

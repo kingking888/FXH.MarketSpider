@@ -22,55 +22,53 @@ class OkexSpider(object):
 
     def send_request(self):
         while True:
-            ts = int(time.time())
-            if ts % 60 != 0:
-                time.sleep(0.9)
-                continue
-            data_list = requests.get("https://www.okex.com/api/futures/v3/instruments").json()
-            data_list += requests.get("https://www.okex.com/api/swap/v3/instruments").json()
+            try:
+                ts = int(time.time())
+                if ts % 60 != 0:
+                    time.sleep(0.9)
+                    continue
 
-            item_list = []
-            for data in data_list:
-                if data['is_inverse'] == "true" or data['is_inverse'] is True:
-                    item = {}
-                    item['symbol'] = data['instrument_id']
-                    item['quote'] = data['quote_currency']
-                    if data.get('alias'):
-                        timeid = data.get('alias')
-                        if timeid == 'this_week':
-                            item['timeid'] = 'CW'
-                        elif timeid == 'next_week':
-                            item['timeid'] = 'NW'
-                        elif timeid == 'quarter':
-                            item['timeid'] = 'CQ'
+                data_list = requests.get("https://www.okex.com/api/futures/v3/instruments").json()
+                data_list += requests.get("https://www.okex.com/api/swap/v3/instruments").json()
+
+                item_list = []
+                for data in data_list:
+                    if data['is_inverse'] == "true" or data['is_inverse'] is True:
+                        item = {}
+                        item['symbol'] = data['instrument_id']
+                        item['quote'] = data['quote_currency']
+                        if data.get('alias'):
+                            timeid = data.get('alias')
+                            if timeid == 'this_week':
+                                item['timeid'] = 'CW'
+                            elif timeid == 'next_week':
+                                item['timeid'] = 'NW'
+                            elif timeid == 'quarter':
+                                item['timeid'] = 'CQ'
+                            else:
+                                item['timeid'] = 'NQ'
                         else:
-                            item['timeid'] = 'NQ'
-                    else:
-                        item['timeid'] = 'SWAP'
-                    item_list.append(item)
+                            item['timeid'] = 'SWAP'
+                        item_list.append(item)
 
-            data_list = [item for item in item_list if item['symbol'].split("-")[0] == "BTC"]
-            print(data_list)
+                data_list = [item for item in item_list if item['symbol'].split("-")[0] == "BTC"]
+                print(data_list)
 
-            for data in data_list:
-                if data['symbol'].split("-")[0] == "BTC":
-                    if data['timeid'] == 'SWAP':
-                        url = self.swap_url.format(data['symbol'])
-                    else:
-                        url = self.futures_url.format(data['symbol'])
+                for data in data_list:
+                    if data['symbol'].split("-")[0] == "BTC":
+                        if data['timeid'] == 'SWAP':
+                            url = self.swap_url.format(data['symbol'])
+                        else:
+                            url = self.futures_url.format(data['symbol'])
 
-                    while True:
-                        try:
-                            response = requests.get(url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
-                            self.parse_response(response, data['timeid'], ts)
-                            break
-                        except Exception as e:
-                            logger.error(e)
-                            logger.error("正在重新发送请求...")
+                        response = requests.get(url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
+                        self.parse_response(response, data['timeid'], ts)
 
+                break
+            except Exception as e:
+                logger.error(e)
+                logger.error("正在重新发送请求...")
 
-            logger.info("采集结束，一分钟后再次采集...")
-            time.sleep(20)
 
     def parse_response(self, response, timeid, ts):
         data = response.json()
@@ -88,7 +86,7 @@ class OkexSpider(object):
         redis_key_name = "okex:futures:open_interest:{}_{}".format(item["Pair1"], item['Title'])
         while True:
             try:
-                self.redis_connect.lpush(redis_key_name, json.dumps(item))
+                #self.redis_connect.lpush(redis_key_name, json.dumps(item))
                 logger.info(f"push: {item}")
                 break
             except:
@@ -97,7 +95,10 @@ class OkexSpider(object):
 
 
     def main(self):
-        self.send_request()
+        while True:
+            self.send_request()
+            logger.info("采集结束，一分钟后再次采集...")
+            time.sleep(20)
 
 
 if __name__ == "__main__":

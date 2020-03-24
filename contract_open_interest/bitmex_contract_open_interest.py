@@ -6,7 +6,7 @@ from loguru import logger
 import random
 
 
-class HuobiproSpider(object):
+class BitmexSpider(object):
     def __init__(self):
         self.url = "https://www.bitmex.com/api/v1/instrument?symbol="
         self.info_url = "https://www.bitmex.com/api/v1/instrument/activeIntervals"
@@ -19,27 +19,27 @@ class HuobiproSpider(object):
         )
 
     def send_request(self):
-        symbol_list = requests.get(self.info_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))}).json()['symbols']
-        now_symbol_list = [symbol for symbol in symbol_list if "XBT" in symbol]
-        print(now_symbol_list)
-
         while True:
-            ts = int(time.time())
-            if ts % 60 != 0:
-                time.sleep(0.9)
-                continue
-            for symbol in now_symbol_list:
-                while True:
-                    try:
-                        response = requests.get(self.url + symbol, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
-                        # price = requests.get("https://fapi.binance.com/fapi/v1/ticker/price?symbol=BTCUSDT").json()["price"]
-                        self.parse_response(response, ts)
-                        break
-                    except Exception as e:
-                        logger.error(e)
-                        logger.error("正在重新发送请求...")
-            logger.info("采集结束，一分钟后再次采集...")
-            time.sleep(20)
+            try:
+                ts = int(time.time())
+                if ts % 60 != 0:
+                    time.sleep(0.9)
+                    continue
+
+                symbol_list = requests.get(self.info_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))}).json()['symbols']
+                now_symbol_list = [symbol for symbol in symbol_list if "XBT" in symbol]
+                print(now_symbol_list)
+
+                for symbol in now_symbol_list:
+                    response = requests.get(self.url + symbol, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
+                    self.parse_response(response, ts)
+
+                logger.info("采集结束，一分钟后再次采集...")
+                time.sleep(20)
+
+            except Exception as e:
+                logger.error(e)
+                logger.error("正在重新发送请求...")
 
     def parse_response(self, response, ts):
         data = response.json()[0]
@@ -70,5 +70,5 @@ class HuobiproSpider(object):
         self.send_request()
 
 if __name__ == "__main__":
-    spider = HuobiproSpider()
+    spider = BitmexSpider()
     spider.main()

@@ -134,7 +134,6 @@ class BitmexKlineSpider(object):
                 try:
                     redis_connect.lpush(redis_key_name, json.dumps(item))
                     self.logger.info("push item: {} {}".format(self.symbol, item))
-
                     break
                 except Exception as e:
                     self.logger.error(e)

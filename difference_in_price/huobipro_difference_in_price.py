@@ -28,24 +28,23 @@ def send_request():
 
             data = {
                 "Time": int(time.time() * 1000),
-                "BTC": {
-                    "CW": float("%.2f" % (btc_cw_price - btc_spot_price)),
-                    "NW": float("%.2f" % (btc_nw_price - btc_spot_price)),
-                    "CQ": float("%.2f" % (btc_cq_price - btc_spot_price)),
-                    "SWAP": 0,
-                    "Market": "USD",
-                    "Price": {
-                        "SPOT": btc_spot_price,
-                        "CW": btc_cw_price,
-                        "NW": btc_nw_price,
-                        "CQ": btc_cq_price,
-                        "SWAP": 0
-                    }
+                "CW": float("%.2f" % (btc_cw_price - btc_spot_price)),
+                "NW": float("%.2f" % (btc_nw_price - btc_spot_price)),
+                "CQ": float("%.2f" % (btc_cq_price - btc_spot_price)),
+                "NQ": 0,
+                "SWAP": 0,
+                "Price": {
+                    "SPOT": btc_spot_price,
+                    "CW": btc_cw_price,
+                    "NW": btc_nw_price,
+                    "CQ": btc_cq_price,
+                    "NQ": 0,
+                    "SWAP": 0
                 }
             }
 
             redis_connect = redis.Redis(host="47.107.228.85", port=6379, password="20ab20!2#Spider!alxmH")
-            redis_connect.set("huobipro:difference_in_price", json.dumps(data))
+            redis_connect.set("huobipro:btc:usd:difference_in_price", json.dumps(data))
 
             logger.info("Push: {}".format(data))
             break

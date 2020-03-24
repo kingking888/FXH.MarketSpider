@@ -4,6 +4,8 @@ sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/difference_in_price/okex_difference_in_price.py > logs/okex_difference_in_price.log 2>&1 &
 sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/difference_in_price/binance_difference_in_price.py > logs/binance_difference_in_price.log 2>&1 &
+sleep 3
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/difference_in_price/gate_difference_in_price.py > logs/gate_difference_in_price.log 2>&1 &
 echo "启动完成..."
 exit
 

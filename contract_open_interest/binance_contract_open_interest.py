@@ -6,7 +6,7 @@ from loguru import logger
 import random
 
 
-class HuobiproSpider(object):
+class BinanceSpider(object):
     def __init__(self):
         #https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT
         self.url = "https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT"
@@ -63,5 +63,5 @@ class HuobiproSpider(object):
         self.send_request()
 
 if __name__ == "__main__":
-    spider = HuobiproSpider()
+    spider = BinanceSpider()
     spider.main()

@@ -24,24 +24,23 @@ def send_request():
 
             data = {
                 "Time": int(time.time() * 1000),
-                "BTC": {
+                "CW": 0,
+                "NW": 0,
+                "CQ": 0,
+                "NQ": 0,
+                "SWAP": float("%.2f" % (btc_swap_price - btc_spot_price)),
+                "Price": {
+                    "SPOT": btc_spot_price,
                     "CW": 0,
                     "NW": 0,
                     "CQ": 0,
-                    "SWAP": float("%.2f" % (btc_swap_price - btc_spot_price)),
-                    "Market": "USDT",
-                    "Price": {
-                        "SPOT": btc_spot_price,
-                        "CW": 0,
-                        "NW": 0,
-                        "CQ": 0,
-                        "SWAP": btc_swap_price
-                    }
+                    "NQ": 0,
+                    "SWAP": btc_swap_price
                 }
             }
 
             redis_connect = redis.Redis(host="47.107.228.85", port=6379, password="20ab20!2#Spider!alxmH")
-            redis_connect.set("binance:difference_in_price", json.dumps(data))
+            redis_connect.set("binance:btc:usdt:difference_in_price", json.dumps(data))
 
             logger.info("Push: {}".format(data))
             break
