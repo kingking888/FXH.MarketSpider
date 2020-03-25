@@ -76,12 +76,11 @@ class OkexSpider(object):
                 while True:
                     try:
                         self.redis_connect.lpush("okex:btc:usd:difference_in_price", json.dumps(data))
+                        logger.info("Push: {}".format(data))
                         break
                     except:
-                        self.redis_connect = redis.Redis(host="47.107.228.85",
-                                                         port=6379, password="20ab20!2#Spider!alxmH")
+                        self.redis_connect = redis.Redis(host="47.107.228.85", port=6379, password="20ab20!2#Spider!alxmH")
 
-                logger.info("Push: {}".format(data))
             except Exception as e:
                 logger.error(e)
 
