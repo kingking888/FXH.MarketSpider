@@ -75,7 +75,7 @@ class OkexSpider(object):
 
                 while True:
                     try:
-                        self.redis_connect.lpush("okex:btc:usd:difference_in_price", json.dumps(data))
+                        self.redis_connect.set("okex:btc:usd:difference_in_price", json.dumps(data))
                         logger.info("Push: {}".format(data))
                         break
                     except:
