@@ -88,7 +88,7 @@ class StockMarket(object):
             'high': _high,
             'low': _low,
             'volume': data2[1] if data2[1] != 'N/A' else int(data2[4].replace(",", "")) // 3,
-            'amount': "--",
+            'amount': None,
             'year_high': float(data2[5].split(" - ")[0].replace(",", "")),
             'year_low': float(data2[5].split(" - ")[1].replace(",", ""))
         }
@@ -121,8 +121,8 @@ class StockMarket(object):
             'close': _close,
             'high': _high,
             'low': _low,
-            'volume': "--",
-            'amount': "--",
+            'volume': None,
+            'amount': None,
             'year_high': self.xau_year_high,
             'year_low': self.xau_year_low
         }
