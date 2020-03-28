@@ -51,6 +51,7 @@ class OkexDepthSpider(object):
                 self.depth_type = futures_info_dict[index]['timeid']
                 self.req = futures_info_dict[index]['depth']
                 self.logger.info('数字货币：{} {} ：{} 数据获取开始时间'.format(self.symbol,  self.coin, self.depth_type))
+                break
             except Exception as e:
                 logger.error(e)
                 time.sleep(10)

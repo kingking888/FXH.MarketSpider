@@ -1,0 +1,6 @@
+#!/bin/bash
+nohup /usr/bin/python3 -u /root/FXH.MarketSpider/stock_market/stock_market.py > logs/stock_market.log 2>&1 &
+echo "启动完成..."
+exit
+
+

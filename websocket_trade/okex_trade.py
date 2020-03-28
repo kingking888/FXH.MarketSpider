@@ -47,6 +47,7 @@ class OkexTradeSpider(object):
                 self.trade_type = futures_info_dict[index]['timeid']
                 self.req = futures_info_dict[index]['trade']
                 self.logger.info('数字货币：{} {} ：{} 数据获取开始时间'.format(self.symbol,  self.coin, self.trade_type))
+                break
             except Exception as e:
                 self.logger.error(e)
                 time.sleep(10)
