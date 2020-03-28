@@ -44,11 +44,16 @@ class OkexDepthSpider(object):
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
     def task_thread(self, index):
-        self.symbol = futures_info_dict[index]['pair1']
-        self.coin = futures_info_dict[index]['pair2']
-        self.depth_type = futures_info_dict[index]['timeid']
-        self.req = futures_info_dict[index]['depth']
-        self.logger.info('数字货币：{} {} ：{} 数据获取开始时间'.format(self.symbol,  self.coin, self.depth_type))
+        while True:
+            try:
+                self.symbol = futures_info_dict[index]['pair1']
+                self.coin = futures_info_dict[index]['pair2']
+                self.depth_type = futures_info_dict[index]['timeid']
+                self.req = futures_info_dict[index]['depth']
+                self.logger.info('数字货币：{} {} ：{} 数据获取开始时间'.format(self.symbol,  self.coin, self.depth_type))
+            except Exception as e:
+                logger.error(e)
+                time.sleep(10)
 
         # 反复尝试建立websocket连接
         while True:

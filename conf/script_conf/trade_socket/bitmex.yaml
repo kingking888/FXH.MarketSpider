@@ -1,14 +1,10 @@
 
 
 bitmex:
-  pair_url: "https://www.bitmex.com/api/v1/trade/bucketed?"
+  pair_url: "https://www.bitmex.com/api/v1/instrument/activeIntervals"
   socket_url: "wss://www.bitmex.com/realtime"
-  symbol_dict: {
-    "XBTUSD":"SWAP", "XBTH20":"CQ", "XBTM20":"NQ", "ETHUSD":"SWAP", "ETHH20":"CQ", 
-    "LTCH20":"CQ", "XRPH20":"CQ", "BCHH20":"CQ", "ADAH20":"CQ", "EOSH20":"CQ", "TRXH20":"CQ", "XRPUSD":"SWAP"
-  }
 
-  # 订阅 KLine 数据
+  # 订阅 Trade 数据
   trade_info: [{'trade': '{"op": "subscribe", "args": ["trade:{symbol}"]}'}]
   utype: "string"
   proxy: "true"

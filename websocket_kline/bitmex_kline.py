@@ -8,6 +8,7 @@ import threading
 import json
 import gc
 import random
+import requests
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -180,16 +181,32 @@ if __name__ == "__main__":
     proxy = exchange.get("proxy")
     pair_url = exchange.get("pair_url")
     kline_info_list = exchange.get("kline_info")
-    symbol_dict = exchange.get("symbol_dict")
+    # symbol_dict = exchange.get("symbol_dict")
 
+    ########################################################################################
     # 代理和requests报头
     proxies = {
         "https": "https://127.0.0.1:1080",
     }
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36',
-        'source': 'web'
     }
+
+    # url = "https://www.bitmex.com/api/v1/instrument/activeIntervals"
+    active_info = requests.get(pair_url, headers=headers).json()
+
+    symbol_info = {symbol: interval for symbol, interval in zip(active_info.get("symbols"), active_info.get("intervals"))}
+
+    symbol_dict = {}
+    for symbol in symbol_info:
+        if 'perpetual' in symbol_info.get(symbol):
+            symbol_dict[symbol] = "SWAP"
+        elif 'biquarterly' in symbol_info.get(symbol):
+            symbol_dict[symbol] = 'NQ'
+        else:
+            symbol_dict[symbol] = 'CQ'
+
+    ########################################################################################
 
     # 子线程组
     thread_list = []
