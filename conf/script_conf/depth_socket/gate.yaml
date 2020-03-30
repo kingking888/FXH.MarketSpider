@@ -4,8 +4,6 @@ gate:
     - 'https://fx-api.gateio.ws/api/v4/futures/btc/contracts'
     - 'https://fx-api.gateio.ws/api/v4/futures/usdt/contracts'
 
-  # pair_url_spot: "https://api.huobi.pro/v1/common/symbols"                             # 现货币种信息
-
   socket_url_btc: "wss://fx-ws.gateio.ws/v4/ws/btc"                                 # websocket 链接地址
   socket_url_usdt: "wss://fx-ws.gateio.ws/v4/ws/usdt"                                 # websocket 链接地址
 

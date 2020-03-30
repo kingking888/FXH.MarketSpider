@@ -39,7 +39,11 @@ class HuobiProKlineSpider(object):
                 # 是否需要使用代理（目前huobi不需要代理）
                 proxy = self.exchange.get("proxy")
                 # 获取建立websocket的请求链接
-                socket_url = self.exchange.get("socket_url")
+
+                if self.kline_type == 'SWAP':
+                    socket_url = self.exchange.get("socket_url_swap")
+                else:
+                    socket_url = self.exchange.get("socket_url")
 
                 if proxy == "true":
                     ws = create_connection(socket_url, http_proxy_host="127.0.0.1", http_proxy_port=random.randint(8080, 8323))
@@ -190,7 +194,10 @@ if __name__ == "__main__":
     # 是否需要使用代理（目前huobi不需要代理）
     proxy = exchange.get("proxy")
     pair_url = exchange.get("pair_url")
+    pair_url_swap = exchange.get("pair_url_swap")
+
     kline_info_list = exchange.get("kline_info")
+    kline_info_swap = exchange.get("kline_info_swap")
 
     # 代理和requests报头
     proxies = {
@@ -204,19 +211,28 @@ if __name__ == "__main__":
     # 子线程组
     thread_list = []
 
-    if pair_url:
+    if pair_url and pair_url_swap:
         # 获取当前页面币种信息，目前huobi不需要代理，其他需要代理
         if proxy == "true":
             resp = requests.get(pair_url, headers=headers, proxies=proxies).json()
+            resp_swap = requests.get(pair_url_swap, headers=headers, proxies=proxies).json()
+
         else:
             resp = requests.get(pair_url, headers=headers).json()
+            resp_swap = requests.get(pair_url_swap, headers=headers).json()
 
         #####################################################################
         # 获取所有合约币种信息（data 列表）
         data_list = resp.get("data")
         # 获取所有合约币种名称（BTC、ETC、ETH、EOS、LTC、BCH、XRP、TRX、BSV）
-        symbol_list = [data.get("symbol") for data in data_list]
+        symbol_list = list(set([data.get("symbol") for data in data_list]))
         print(symbol_list)
+
+        # swap
+        data_swap_list = resp_swap.get('data')
+        symbol_swap_list = [data_swap.get("contract_code") for data_swap in data_swap_list]
+        print(symbol_swap_list)
+
         #####################################################################
 
         # 获取所有k线采集方案(3次)
@@ -232,6 +248,18 @@ if __name__ == "__main__":
                 thread_list.append(t)
                 t.start()
                 time.sleep(0.2)
+        # swap
+        for symbol_swap in symbol_swap_list:
+            kline_type_swap = kline_info_swap.get("kline_type")
+            kline_swap = kline_info_swap.get('kline')
+            req = "{" + kline_swap[1: -1].format(symbol=symbol_swap) + "}"
+            spider = HuobiProKlineSpider(logger, symbol_swap, exchange, req, kline_type_swap)
+            t = MyThread(target=spider.task_thread, args=())
+            thread_list.append(t)
+            t.start()
+            time.sleep(0.2)
+
+
         time.sleep(1)
 
     while True:
