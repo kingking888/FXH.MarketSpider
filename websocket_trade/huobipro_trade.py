@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
         # swap
         data_swap_list = resp_swap.get('data')
-        symbol_swap_list = [data_swap.get("contract_code") for data_swap in data_swap_list]
+        symbol_swap_list = [data_swap.get("symbol") for data_swap in data_swap_list]
         print(symbol_swap_list)
 
         #####################################################################

@@ -15,7 +15,7 @@ huobipro:
     {'depth': '{"sub":"market.{symbol}_CQ.depth.step0"}', 'depth_type': 'CQ'},         # 交割合约(季度 1min)
   ]
 
-  depth_info_swap : {'depth': '{"sub":"market.{symbol}.depth.step0"}', 'depth_type': 'SWAP'}
+  depth_info_swap : {'depth': '{"sub":"market.{symbol}-USD.depth.step0"}', 'depth_type': 'SWAP'}
 
   depth_info_spot: [                                                                    # 订阅 KLine 数据
     {'depth': '{"sub":"market.{symbol}.depth.step0"}', 'depth_type': 'SPOT'},         # 现货(1min)

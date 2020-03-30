@@ -17,7 +17,7 @@ huobipro:
     {'trade': '{"sub":"market.{symbol}_CQ.trade.detail"}', 'trade_type': 'CQ'},         # 交割合约(季度 1min)
   ]
 
-  trade_info_swap: {'trade': '{"sub":"market.{symbol}.trade.detail"}', 'trade_type': 'SWAP'}
+  trade_info_swap: {'trade': '{"sub":"market.{symbol}-USD.trade.detail"}', 'trade_type': 'SWAP'}
 
   trade_info_spot: [                                                                    # 订阅 KLine 数据
     {'trade': '{"sub":"market.{symbol}.trade.detail"}', 'trade_type': 'SPOT'},         # 现货(1min)

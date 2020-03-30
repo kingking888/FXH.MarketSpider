@@ -17,7 +17,7 @@ huobipro:
     {'kline': '{"sub":"market.{symbol}_CQ.kline.1min"}', 'kline_type': 'CQ'},         # 交割合约(季度 1min)
   ]
 
-  kline_info_swap : {'kline': '{"sub":"market.{symbol}.kline.1min"}', 'kline_type': 'SWAP'}
+  kline_info_swap : {'kline': '{"sub":"market.{symbol}-USD.kline.1min"}', 'kline_type': 'SWAP'}
 
   kline_info_spot: [                                                                    # 订阅 KLine 数据
     {'kline': '{"sub":"market.{symbol}.kline.1min"}', 'kline_type': 'SPOT'},         # 现货(1min)
