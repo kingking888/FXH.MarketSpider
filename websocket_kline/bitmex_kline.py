@@ -51,7 +51,7 @@ class BitmexKlineSpider(object):
                 self.logger.info('数字货币： {} {} connect ws error, retry...'.format(self.symbol, self.kline_type))
                 time.sleep(3)
 
-        logger.info("数字货币： {} {} connect success".format(self.symbol, self.kline_type))
+        self.logger.info("数字货币： {} {} connect success".format(self.symbol, self.kline_type))
         # 获取数据加密类型（gzip）
         utype = self.exchange.get("utype")
 
