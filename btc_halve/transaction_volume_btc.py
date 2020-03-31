@@ -66,7 +66,6 @@ if __name__ == "__main__":
             main(url)
             # time.sleep(3600)
             time.sleep(600)
-            logger.info("存储完毕，一小时后再试...")
         except Exception as e:
             logger.error(e)
             time.sleep(10)
