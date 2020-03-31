@@ -45,7 +45,7 @@ def save_data(data):
         # print("deal: ", data)
 
     redis_connect.lpush("Coin:ReduceHalf:coindays-destroyed-list", json.dumps(data_list))
-    logger.info("push 完成...")
+    logger.info("Push: {}".format(data_list))
     # redis_connect.rpop("Coin:ReduceHalf:coindays-destroyed-list")
     # logger.info("pop 完成...")
 
@@ -66,8 +66,7 @@ if __name__ == "__main__":
             logger.info(url)
             main(url)
             time.sleep(600)
-            # time.sleep(3600)
-            logger.info("存储完毕，一小时后再试...")
+
         except Exception as e:
             logger.error(e)
             time.sleep(10)

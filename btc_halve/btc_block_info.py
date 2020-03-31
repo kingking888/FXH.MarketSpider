@@ -48,7 +48,6 @@ def send_request():
 
     save_data(data, new_data, best_fees)
 
-    logger.info("push 完成...")
 
 def parse_response(resp):
     html = resp.content
@@ -101,7 +100,7 @@ def save_data(data, new_data, best_fees):
     while True:
         try:
             redis_connect.lpush("Coin:ReduceHalf:btc_block_info", json.dumps(item))
-            print(item)
+            logger.info("Push: {}".format(item))
             break
         except:
             pass

@@ -48,7 +48,7 @@ def save_data(data):
         # print("deal: ", data)
 
     redis_connect.lpush("Coin:ReduceHalf:average-block-hash-rate-list", json.dumps(data_list))
-    logger.info("push 完成...")
+    logger.info("Push: {}".format(data_list))
     # redis_connect.rpop("Coin:ReduceHalf:average-block-hash-rate-list")
     # logger.info("pop 完成...")
 

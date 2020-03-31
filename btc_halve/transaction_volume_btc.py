@@ -42,7 +42,7 @@ def save_data(data):
         # logger.info("deal: ", data)
 
     redis_connect.lpush("Coin:ReduceHalf:transaction-volume-btc-list", json.dumps(data_list))
-    logger.info("push 完成...")
+    logger.info("Push: {}".format(data_list))
     # redis_connect.rpop("Coin:ReduceHalf:transaction-volume-btc-list")
     # logger.info("pop 完成...")
 

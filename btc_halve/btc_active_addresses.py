@@ -40,7 +40,7 @@ def send_request():
         data_list.append(item)
 
     redis_connect.lpush("Coin:ReduceHalf:btc-active-addresse-list", json.dumps(data_list))
-    logger.info("push 完成...")
+    logger.info("Push: {}".format(data_list))
     #
     # redis_connect.rpop("Coin:ReduceHalf:btc-active-addresse-list")
     # logger.info("pop 完成...")
