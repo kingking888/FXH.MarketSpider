@@ -15,6 +15,7 @@ btc_spot_url = "https://api.huobi.pro/market/trade?symbol=btcusdt&limit=1"
 btc_cw_url = "https://api.btcgateway.pro/market/trade?symbol=BTC_CW&limit=1"
 btc_nw_url = "https://api.btcgateway.pro/market/trade?symbol=BTC_NW&limit=1"
 btc_cq_url = "https://api.btcgateway.pro/market/trade?symbol=BTC_CQ&limit=1"
+btc_swap_url = "https://api.btcgateway.pro/swap-ex/market/trade?contract_code=BTC-USD&limit=1"
 
 
 def send_request():
@@ -25,6 +26,7 @@ def send_request():
             btc_cw_price = float(requests.get(btc_cw_url, proxies=proxies).json()['tick']['data'][0]['price'])
             btc_nw_price = float(requests.get(btc_nw_url, proxies=proxies).json()['tick']['data'][0]['price'])
             btc_cq_price = float(requests.get(btc_cq_url, proxies=proxies).json()['tick']['data'][0]['price'])
+            btc_swap_price = float(requests.get(btc_swap_url, proxies=proxies).json()['tick']['data'][0]['price'])
 
             data = {
                 "Time": int(time.time() * 1000),
@@ -32,14 +34,14 @@ def send_request():
                 "NW": float("%.2f" % (btc_nw_price - btc_spot_price)),
                 "CQ": float("%.2f" % (btc_cq_price - btc_spot_price)),
                 "NQ": 0,
-                "SWAP": 0,
+                "SWAP": float("%.2f" % (btc_swap_price - btc_spot_price)),
                 "Price": {
                     "SPOT": btc_spot_price,
                     "CW": btc_cw_price,
                     "NW": btc_nw_price,
                     "CQ": btc_cq_price,
                     "NQ": 0,
-                    "SWAP": 0
+                    "SWAP": btc_swap_price
                 }
             }
 
