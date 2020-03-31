@@ -45,7 +45,7 @@ class BinanceSpider(object):
         item['Title'] = "SWAP"
 
         item['Pair1'] = "BTC"
-        item['Pair2'] = 'USD'
+        item['Pair2'] = 'USDT'
         item['Volume'] = float(data['openInterest'])
 
         item['Usd'] = item['Volume'] * float(price)
