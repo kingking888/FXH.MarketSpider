@@ -51,7 +51,6 @@ class HuobiproSpider(object):
             logger.info("采集结束，一分钟后再次采集...")
             time.sleep(20)
 
-
     def parse_response(self, response, ts):
         item = {}
         item['Time'] = ts
