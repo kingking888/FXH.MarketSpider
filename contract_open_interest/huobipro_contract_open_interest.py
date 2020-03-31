@@ -10,6 +10,7 @@ class HuobiproSpider(object):
     def __init__(self):
         self.url = "https://api.hbdm.com/api/v1/contract_open_interest"
         self.info_url = "https://api.hbdm.com/api/v1/contract_contract_info"
+        self.swap_btc_url = "https://api.btcgateway.pro/swap-api/v1/swap_open_interest"
         # self.redis_connect = redis.Redis(host='122.228.200.88', port=6378, db=0, password="redis123456")
         self.redis_connect = redis.Redis(
             host='47.107.228.85',
@@ -37,14 +38,25 @@ class HuobiproSpider(object):
                         except Exception as e:
                             logger.error(e)
                             logger.error("正在重新发送请求...")
+
+            while True:
+                try:
+                    response = requests.get(self.swap_btc_url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
+                    self.parse_response(response, ts)
+                    break
+                except Exception as e:
+                    logger.error(e)
+                    logger.error("正在重新发送请求...")
+
             logger.info("采集结束，一分钟后再次采集...")
             time.sleep(20)
+
 
     def parse_response(self, response, ts):
         item = {}
         item['Time'] = ts
         data = response.json()['data'][0]
-        contract_type = data['contract_type']
+        contract_type = data.get('contract_type')
 
         if contract_type == 'this_week':
             item['Title'] = 'CW'
@@ -63,7 +75,7 @@ class HuobiproSpider(object):
         redis_key_name = "huobipro:futures:open_interest:{}_{}".format(item["Pair1"], item['Title'])
         while True:
             try:
-                self.redis_connect.lpush(redis_key_name, json.dumps(item))
+                # self.redis_connect.lpush(redis_key_name, json.dumps(item))
                 logger.info(f"push: {item}")
                 break
             except:
