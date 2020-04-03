@@ -186,24 +186,25 @@ def get_instruments():
                 item = {}
                 item['pair1'] = futures.get('base_currency')
                 item['pair2'] = futures.get("quote_currency")
-                timeid = futures.get('alias')
-                if timeid == 'this_week':
-                    item['timeid'] = 'CW'
-                elif timeid == 'next_week':
-                    item['timeid'] = 'NW'
-                elif timeid == 'quarter':
-                    item['timeid'] = 'CQ'
-                elif timeid == 'bi_quarter':
-                    item['timeid'] = 'NQ'
-                else:
-                    item['timeid'] = 'SWAP'
+                if item['pair2'] == 'USDT':
+                    timeid = futures.get('alias')
+                    if timeid == 'this_week':
+                        item['timeid'] = 'CW'
+                    elif timeid == 'next_week':
+                        item['timeid'] = 'NW'
+                    elif timeid == 'quarter':
+                        item['timeid'] = 'CQ'
+                    elif timeid == 'bi_quarter':
+                        item['timeid'] = 'NQ'
+                    else:
+                        item['timeid'] = 'SWAP'
 
-                if item['timeid'] == 'SWAP':
-                    item['kline'] = swap_kline.replace("instrument_id", futures.get('instrument_id'))
-                else:
-                    item['kline'] = futures_kline.replace("instrument_id", futures.get('instrument_id'))
-                # {'pair1': 'BTC', 'pair2': 'USD', 'timeid': 'NQ', 'kline': '{"op":"subscribe","args":"futures/candle60s:BTC-USD-200925"}'}
-                futures_info_list.append(item)
+                    if item['timeid'] == 'SWAP':
+                        item['kline'] = swap_kline.replace("instrument_id", futures.get('instrument_id'))
+                    else:
+                        item['kline'] = futures_kline.replace("instrument_id", futures.get('instrument_id'))
+                    # {'pair1': 'BTC', 'pair2': 'USD', 'timeid': 'NQ', 'kline': '{"op":"subscribe","args":"futures/candle60s:BTC-USD-200925"}'}
+                    futures_info_list.append(item)
 
             global futures_info_dict, last_futures_info_dict
             # print(futures_info_list)
