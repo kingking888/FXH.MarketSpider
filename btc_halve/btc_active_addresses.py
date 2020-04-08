@@ -48,7 +48,7 @@ def send_request():
 
 if __name__ == "__main__":
     # redis_connect = redis.Redis(host="122.228.200.88", port=6378, db=0, password="redis123456")
-    redis_connect = redis.Redis(host="r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com", port=6379, db=0, password="20ab20!2#Spider!alxmH")
+    redis_connect = redis.Redis(host="47.107.228.85", port=6379, db=0, password="20ab20!2#Spider!alxmH")
 
     while True:
         try:
@@ -57,4 +57,4 @@ if __name__ == "__main__":
         except Exception as e:
             logger.error(e)
             time.sleep(10)
-            redis_connect = redis.Redis(host="r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com", port=6379, db=0, password="20ab20!2#Spider!alxmH")
+            redis_connect = redis.Redis(host="47.107.228.85", port=6379, db=0, password="20ab20!2#Spider!alxmH")

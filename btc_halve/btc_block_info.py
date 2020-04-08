@@ -107,7 +107,7 @@ def save_data(data, new_data, best_fees):
 
 
 if __name__ == "__main__":
-    redis_connect = redis.Redis(host="r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com", port=6379, db=0, password="20ab20!2#Spider!alxmH")
+    redis_connect = redis.Redis(host="47.107.228.85", port=6379, db=0, password="20ab20!2#Spider!alxmH")
     while True:
         try:
             # redis_connet = redis.Redis(host="r-j6ce6n77kflx9yxalqpd.redis.rds.aliyuncs.com", port=6379, db=0, password="Spider#!AbcK982_Kline")
@@ -116,5 +116,5 @@ if __name__ == "__main__":
         except Exception as e:
             logger.error(e)
             time.sleep(1)
-            redis_connect = redis.Redis(host="r-wz9jjob47pi7m6rykxpd.redis.rds.aliyuncs.com", port=6379, db=0, password="20ab20!2#Spider!alxmH")
+            redis_connect = redis.Redis(host="47.107.228.85", port=6379, db=0, password="20ab20!2#Spider!alxmH")
 
