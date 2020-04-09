@@ -1,12 +1,8 @@
 #!/bin/bash
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/btc_halve/average_block_hash_rate.py > logs/average_block_hash_rate.log 2>&1 &
-sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/btc_halve/coindays_destroyed.py > logs/coindays_destroyed.log 2>&1 &
-sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/btc_halve/transaction_volume_btc.py > logs/transaction_volume_btc.log 2>&1 &
-sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/btc_halve/btc_active_addresses.py > logs/btc_active_addresses.log 2>&1 &
-sleep 3
 nohup /usr/bin/python3 -u /root/FXH.MarketSpider/btc_halve/btc_block_info.py > logs/btc_block_info.log 2>&1 &
 echo "启动完成..."
 exit
