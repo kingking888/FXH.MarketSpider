@@ -20,23 +20,25 @@ class BinanceSpider(object):
         )
 
     def send_request(self):
-        while True:
-            ts = int(time.time())
-            if ts % 60 != 0:
-                time.sleep(0.9)
-                continue
 
-            while True:
-                try:
-                    response = requests.get(self.url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
-                    price = requests.get("https://fapi.binance.com/fapi/v1/ticker/price?symbol=BTCUSDT").json()["price"]
-                    self.parse_response(response, price, ts)
-                    break
-                except Exception as e:
-                    logger.error(e)
-                    logger.error("正在重新发送请求...")
-            logger.info("采集结束，一分钟后再次采集...")
-            time.sleep(20)
+        while True:
+            try:
+                ts = int(time.time())
+                if ts % 60 != 0:
+                    time.sleep(0.9)
+                    continue
+
+                response = requests.get(self.url, proxies={"https": "http://127.0.0.1:{}".format(random.randint(8081, 8323))})
+                price = requests.get("https://fapi.binance.com/fapi/v1/ticker/price?symbol=BTCUSDT").json()["price"]
+                self.parse_response(response, price, ts)
+
+                logger.info("采集结束，一分钟后再次采集...")
+                time.sleep(20)
+
+            except Exception as e:
+                logger.error(e)
+                logger.error("正在重新发送请求...")
+
 
     def parse_response(self, response, price, ts):
         data = response.json()

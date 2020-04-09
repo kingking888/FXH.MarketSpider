@@ -28,11 +28,12 @@ class OkexSpider(object):
     def send_request(self):
         while True:
             #if int(time.time()) % 60 > 20 or self.first_run:
-            self.get_instruments()
-            if self.item_list != self.last_item_list:
-                logger.info("获取新的合约列表: {}".format(self.item_list))
-                self.last_item_list = self.item_list
             try:
+                self.get_instruments()
+                if self.item_list != self.last_item_list:
+                    logger.info("获取新的合约列表: {}".format(self.item_list))
+                    self.last_item_list = self.item_list
+
                 btc_spot_price = float(requests.get(self.btc_spot_url, proxies=self.proxy).json()[0]['price'])
 
                 for item in self.item_list:
