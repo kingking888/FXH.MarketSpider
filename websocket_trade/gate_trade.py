@@ -133,11 +133,10 @@ class GateTradeSpider(object):
                         # self.last_item = item
                         # if int(time.time()) % 5 == 0:
                         #     self.logger.info("push item")
-                        redis_connect.ltrim(redis_key_name, 0, 19999)
+                        # redis_connect.ltrim(redis_key_name, 0, 19999)
                         break
                     except Exception as e:
-                        self.logger.error(e)
-                        self.logger.error(item)
+                        self.logger.error("Push Error: {}".format(e))
 
 
 def get_index_price():

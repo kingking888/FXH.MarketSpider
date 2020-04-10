@@ -96,7 +96,7 @@ class HuobiProTradeSpider(object):
                     pong = '{"pong":' + ts + '}'
                     #print(pong)
                     ws.send(pong)
-                    ws.send(self.req)
+                    # ws.send(self.req)
                 else:
                     # self.logger.info(result)
                     self.save_result_redis(result)
@@ -141,7 +141,7 @@ class HuobiProTradeSpider(object):
                         redis_connect.lpush(redis_key_name, json.dumps(item))
                         # if int(time.time()) % 5 == 0:
                         #     self.logger.info("push item")
-                        redis_connect.ltrim(redis_key_name, 0, 19999)
+                        # redis_connect.ltrim(redis_key_name, 0, 19999)
                         break
                     except Exception as e:
                         self.logger.error("Push Error: {}".format(e))

@@ -138,7 +138,7 @@ class OkexTradeSpider(object):
                         redis_connect.ltrim(redis_key_name, 0, 19999)
                         break
                     except Exception as e:
-                        self.logger.error(e)
+                        self.logger.error("Push Error: {}".format(e))
 
 
 class MyThread(threading.Thread):
