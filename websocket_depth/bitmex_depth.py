@@ -98,7 +98,7 @@ class BitmexDepthSpider(object):
                 redis_connect.lpush(redis_key_name, json.dumps(item))
                 # if int(time.time()) % 5 == 0:
                 #     self.logger.info("push item")
-                redis_connect.ltrim(redis_key_name, 0, 19999)
+                # redis_connect.ltrim(redis_key_name, 0, 19999)
                 break
             except Exception as e:
                 self.logger.error(e)

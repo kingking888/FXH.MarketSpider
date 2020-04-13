@@ -153,7 +153,7 @@ class StockMarket(object):
 
                 while True:
                     try:
-                        self.redis_connect.lpush("StockMarket_history", json.dumps(data))
+                        # self.redis_connect.lpush("StockMarket_history", json.dumps(data))
                         self.redis_connect.set("StockMarket", json.dumps(data))
                         logger.info(data)
                         break
