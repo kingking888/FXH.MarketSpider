@@ -152,7 +152,7 @@ class HuobiProKlineSpider(object):
                 while True:
                     try:
                         redis_connect.lpush(redis_key_name, json.dumps(item))
-                        self.logger.info("update item: {}_{} {}".format(self.symbol, self.kline_type, self.item))
+                        self.logger.info("update item: {}_{} {}".format(self.symbol, self.kline_type, item))
                         break
                     except Exception as e:
                         self.logger.error("Push Error: {}".format(e))

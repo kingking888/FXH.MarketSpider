@@ -1,13 +1,13 @@
 
 # HK站群代理服务器本机存OKEx+Bitmex : 43.240.238.234
-redis:
-   host: 127.0.0.1
-   port: 6379
-   db: 1
-   password: "fxhspider"
-   retry_on_timeout: 3
-
-# 深圳阿里云Redis存储 US站群代理服务器
+#redis:
+#   host: 127.0.0.1
+#   port: 6379
+#   db: 0
+#   password: "fxhspider"
+#   retry_on_timeout: 3
+#
+## 深圳阿里云Redis存储 US站群代理服务器
 #redis:
 #    host: "47.107.228.85"
 #    port: 6379
@@ -15,13 +15,13 @@ redis:
 #    password: "20ab20!2#Spider!alxmH"
 #    socket_connect_timeout: 6000
 #    retry_on_timeout: 3
-
-
-
-# 香港阿里云ECS存Huobipro、Binance（外网修改为 r-j6ck5b0szhb54rdbrspd.redis.rds.aliyuncs.com）
+#
+#
+#
+## 香港阿里云ECS存Huobipro、Binance（外网修改为 r-j6ck5b0szhb54rdbrspd.redis.rds.aliyuncs.com）
 #redis:
 #    host: "r-j6ck5b0szhb54rdbrs.redis.rds.aliyuncs.com"
 #    port: 6379
 #    db: 0
 #    password: "KPZ&rDII0A98"
-
+#
