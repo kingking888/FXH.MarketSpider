@@ -106,6 +106,7 @@ class OkexTradeSpider(object):
                 struct_time = datetime.strptime(utc_time, "%Y-%m-%d %H:%M:%S.%f")
                 # okex 数据是utc时间
                 item["Time"] = int(time.mktime(struct_time.timetuple()) * 1000.0 + struct_time.microsecond / 1000.0) + 28800000
+                item['ID'] = str(data.get("trade_id"))
                 #item["Pair1"] = self.pair1
                 #item["Pair2"] = self.pair2
                 #item["Title"] = self.trade_type
@@ -134,7 +135,7 @@ class OkexTradeSpider(object):
                         redis_connect.lpush(redis_key_name, json.dumps(item))
                         # if int(time.time()) % 5 == 0:
                         #     self.logger.info("push item")
-                        redis_connect.ltrim(redis_key_name, 0, 19999)
+                        # redis_connect.ltrim(redis_key_name, 0, 19999)
                         # print(self.last_item)
                         break
                     except Exception as e:

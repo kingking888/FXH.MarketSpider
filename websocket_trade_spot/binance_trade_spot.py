@@ -112,6 +112,7 @@ class BinanceTradeDetail(object):
             item = {}
             # binance 数据是utc+8时间
             item["Time"] = tick.get("T")
+            item['ID'] = str(tick.get("t"))
             #item["Pair1"] = "BTC"
             #item["Pair2"] = self.symbol
             #item["Title"] = self.trade_type
@@ -139,7 +140,7 @@ class BinanceTradeDetail(object):
                 try:
                     redis_connect.lpush(redis_key_name, json.dumps(item))
                     # self.logger.info("push item")
-                    redis_connect.ltrim(redis_key_name, 0, 19999)
+                    # redis_connect.ltrim(redis_key_name, 0, 19999)
                     break
                 except Exception as e:
                     self.logger.error(e)

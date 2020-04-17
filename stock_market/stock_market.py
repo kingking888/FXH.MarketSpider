@@ -17,13 +17,13 @@ class StockMarket(object):
             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
             "Cache-Control": "max-age=0",
             "Connection": "keep-alive",
-            "Cookie": "s=dd11up8zw3; xq_a_token=2ee68b782d6ac072e2a24d81406dd950aacaebe3; xq_r_token=f9a2c4e43ce1340d624c8b28e3634941c48f1052; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOi0xLCJpc3MiOiJ1YyIsImV4cCI6MTU4NzUyMjY2MSwiY3RtIjoxNTg1MTU1NDYyMTEzLCJjaWQiOiJkOWQwbjRBWnVwIn0.mgIcYRJJYCVbuUMRNGsGi0imPyS4C7jbmaAw1vcfCQ_60mUfG0hI9JVplXQ2waX7pNBunAYry0WPyLCaobKOW8M5QVQ_opdTG9RdPEeqODXwXBXsM3GrXo0Q3VNSPsUykppcDltCtpkzl1ZoPgHVCP7Zr0eGtsRrjtHMaRH9C5EqquhSdRDqnyGK3gKJS3sjHWNzjiGiHz-35EdRWlDpXjI4fqdl0mMPfxsydJpvhzdXFGO3xA3fCnF3mEAUXvgChYRewVV-4X548mB3Ipz6AzqmOQbsyGyU4qAdaDMyQwTA60hqRGsugY08nNHouTI0GVaTNswKpQ1lQCA5x160tg; u=191585155493535; cookiesu=191585155493535; device_id=eff311f8bff3877c0be80f1a3de53f43; Hm_lvt_1db88642e346389874251b5a1eded6e3=1585155494,1585155538; _ga=GA1.2.1747436951.1585157634; _gid=GA1.2.25489312.1585157634; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1585166075",
-            # "Host": "stock.xueqiu.com",
+            "Cookie": "device_id=24700f9f1986800ab4fcc880530dd0ed; s=cf11km1ib8; xq_a_token=48575b79f8efa6d34166cc7bdc5abb09fd83ce63; xq_r_token=7dcc6339975b01fbc2c14240ce55a3a20bdb7873; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOi0xLCJpc3MiOiJ1YyIsImV4cCI6MTU4OTY4MjczMCwiY3RtIjoxNTg3MDk0MTkxNzYwLCJjaWQiOiJkOWQwbjRBWnVwIn0.HfSVwps6fCqa-tEjX-frZTs0xyHP1V3DzxdZFvJ_5g3zjj0aPA-JD1Uor_JEKbIv0SwV47OZEG-ey0BtgoQwo9hA2AM1FjZrqn7E_ofeDSxZv6OMvd49splp5tPAljp4FIub0ONRXH_O9ZcbOfr6GGFdUldzxa6J5elxUZpaQ-DCuo7mC7YQkSOYFNaNBT5AJdcj24lo72ndvFMze_n0UM_-dE44scfZQqKh_6fE0EzOKIdUVZAM_aAn2ghPmT88tprO0L1F9dHzFDVbphocuWSxJl8OQ28RcNBccivklBlEGak4WIGIikYKeRHYVUWFDVU2M9KCPMxGIS3LAj2bmQ; Hm_lvt_1db88642e346389874251b5a1eded6e3=1587094242; u=541587094242460; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1587094545",
+            "Host": "stock.xueqiu.com",
             # "Sec-Fetch-Dest": "document",
             # "Sec-Fetch-Mode": "navigate",
             # "Sec-Fetch-Site": "none",
             # "Sec-Fetch-User": "?1",
-            # "Upgrade-Insecure-Requests": "1",
+            "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
         }
 

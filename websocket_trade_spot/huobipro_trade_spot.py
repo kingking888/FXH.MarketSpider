@@ -116,6 +116,8 @@ class HuobiProTradeSpider(object):
                 item = {}
                 #  成交时间
                 item["Time"] = data.get("ts")
+
+                item['ID'] = str(data.get("tradeId"))
                 #item["Pair1"] = self.pair1
                 #item["Pair2"] = self.pair2
                 #item["Title"] = self.trade_type
@@ -144,7 +146,7 @@ class HuobiProTradeSpider(object):
                         redis_connect.lpush(redis_key_name, json.dumps(item))
                         # self.last_item = item
                         # self.logger.info("push item")
-                        redis_connect.ltrim(redis_key_name, 0, 19999)
+                        # redis_connect.ltrim(redis_key_name, 0, 19999)
                         break
                     except redis.exceptions.ConnectionError as e:
                         self.logger.error("redis.exceptions.ConnectionError: {}".format(e))

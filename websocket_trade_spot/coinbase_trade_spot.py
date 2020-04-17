@@ -121,6 +121,7 @@ class CoinbaseTradeSpider(object):
             utc_time = tick.get("time").replace("T", " ").replace("Z", "")
             struct_time = datetime.strptime(utc_time, "%Y-%m-%d %H:%M:%S.%f")
             item["Time"] = int(time.mktime(struct_time.timetuple()) * 1000.0 + struct_time.microsecond / 1000.0) + 28800000
+            item["ID"] = str(tick.get("trade_id"))
             #item["Pair1"] = self.pair1
             #item["Pair2"] = self.pair2
             #item["Title"] = self.trade_type
@@ -147,7 +148,7 @@ class CoinbaseTradeSpider(object):
                 try:
                     redis_connect.lpush(redis_key_name, json.dumps(item))
                     # self.logger.info("push item")
-                    redis_connect.ltrim(redis_key_name, 0, 19999)
+                    # redis_connect.ltrim(redis_key_name, 0, 19999)
                     break
                 except Exception as e:
                     self.logger.error(e)
