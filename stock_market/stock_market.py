@@ -12,32 +12,26 @@ class StockMarket(object):
         self.utc_time = 0
         self.item_list = []
         self.headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            "Cache-Control": "max-age=0",
-            "Connection": "keep-alive",
-            "Cookie": "device_id=24700f9f1986800ab4fcc880530dd0ed; s=cf11km1ib8; xq_a_token=48575b79f8efa6d34166cc7bdc5abb09fd83ce63; xq_r_token=7dcc6339975b01fbc2c14240ce55a3a20bdb7873; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOi0xLCJpc3MiOiJ1YyIsImV4cCI6MTU4OTY4MjczMCwiY3RtIjoxNTg3MDk0MTkxNzYwLCJjaWQiOiJkOWQwbjRBWnVwIn0.HfSVwps6fCqa-tEjX-frZTs0xyHP1V3DzxdZFvJ_5g3zjj0aPA-JD1Uor_JEKbIv0SwV47OZEG-ey0BtgoQwo9hA2AM1FjZrqn7E_ofeDSxZv6OMvd49splp5tPAljp4FIub0ONRXH_O9ZcbOfr6GGFdUldzxa6J5elxUZpaQ-DCuo7mC7YQkSOYFNaNBT5AJdcj24lo72ndvFMze_n0UM_-dE44scfZQqKh_6fE0EzOKIdUVZAM_aAn2ghPmT88tprO0L1F9dHzFDVbphocuWSxJl8OQ28RcNBccivklBlEGak4WIGIikYKeRHYVUWFDVU2M9KCPMxGIS3LAj2bmQ; Hm_lvt_1db88642e346389874251b5a1eded6e3=1587094242; u=541587094242460; Hm_lpvt_1db88642e346389874251b5a1eded6e3=1587094545",
+            "Cookie": "Hm_lpvt_1db88642e346389874251b5a1eded6e3=1587097163; Hm_lvt_1db88642e346389874251b5a1eded6e3=1587097163; device_id=24700f9f1986800ab4fcc880530dd0ed; u=381587097161400; xq_a_token=48575b79f8efa6d34166cc7bdc5abb09fd83ce63; xq_id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOi0xLCJpc3MiOiJ1YyIsImV4cCI6MTU4OTY4MjczMCwiY3RtIjoxNTg3MDk3MTE3NTY0LCJjaWQiOiJkOWQwbjRBWnVwIn0.kCqe33_NoaXzQ4LTWh8vdS1nWPo4gOtDygHmZXPnVy0xgO6ecTgLN5neE3-zRG9USBzcxpr_OJ5VUl4o6hZK-YXWEMRJwLTDMpSBKT4FPBlP-vN3RLBLT2jFoT7XTN26vyv6JxNJ2YYr6eSsiKq_xsgusV53xgotlQ0G89gOOvoKEIBQkQJxc65VQePR42r6Ve3QJy-wQcWHPd8wst0RdV0nSv15QwgFPT63xJ3e3CXR6tserflKV8equd6d_goKiW4SyImihJIL2qPW9BvEzPZgFOEk0ln9BONXgo0eo4UPzcII0nWemnXKvIfFfurNikkkkUhxIqXFNcjq7j2GRg; xq_r_token=7dcc6339975b01fbc2c14240ce55a3a20bdb7873; xqat=48575b79f8efa6d34166cc7bdc5abb09fd83ce63",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Host": "stock.xueqiu.com",
-            # "Sec-Fetch-Dest": "document",
-            # "Sec-Fetch-Mode": "navigate",
-            # "Sec-Fetch-Site": "none",
-            # "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Safari/605.1.15",
+            "Accept-Language": "zh-cn",
+            "Accept-Encoding": "gzip, br, deflate",
+            "Connection": "keep-alive"
         }
 
 
         self.headers_investing = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            "Cache-Control": "max-age=0",
-            "Connection": "keep-alive",
-            "Cookie": "adBlockerNewUserDomains=1574325947; _ga=GA1.2.138619861.1574325947; adbBLk=6; __atuvc=2%7C47; PHPSESSID=1r2a0o7kre9uvntc42qeedsbf3; SideBlockUser=a%3A2%3A%7Bs%3A10%3A%22stack_size%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Bi%3A8%3B%7Ds%3A6%3A%22stacks%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Ba%3A1%3A%7Bi%3A0%3Ba%3A3%3A%7Bs%3A7%3A%22pair_ID%22%3Bs%3A3%3A%22178%22%3Bs%3A10%3A%22pair_title%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22pair_link%22%3Bs%3A20%3A%22%2Findices%2Fjapan-ni225%22%3B%7D%7D%7D%7D; geoC=CN; prebid_page=0; prebid_session=1; StickySession=id.91738823832.268cn.investing.com; _gid=GA1.2.1464484119.1587094572; Hm_lvt_a1e3d50107c2a0e021d734fe76f85914=1587094572; nyxDorf=NTE%2BbDRhNXcxb2FqYi9hYmUwYyY%2FOWJnMzY%3D; Hm_lpvt_a1e3d50107c2a0e021d734fe76f85914=1587095762",
+            "Cookie": "G_ENABLED_IDPS=google; Hm_lpvt_a1e3d50107c2a0e021d734fe76f85914=1587097271; Hm_lvt_a1e3d50107c2a0e021d734fe76f85914=1587097258; SideBlockUser=a%3A2%3A%7Bs%3A10%3A%22stack_size%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Bi%3A8%3B%7Ds%3A6%3A%22stacks%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Ba%3A1%3A%7Bi%3A0%3Ba%3A3%3A%7Bs%3A7%3A%22pair_ID%22%3Bs%3A3%3A%22178%22%3Bs%3A10%3A%22pair_title%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22pair_link%22%3Bs%3A20%3A%22%2Findices%2Fjapan-ni225%22%3B%7D%7D%7D%7D; _ga=GA1.2.352537061.1587097255; _gid=GA1.2.1697814951.1587097256; nyxDorf=YmUxYW4mYz5kMmlkMn84PWcoNG5maQ%3D%3D; __gads=ID=8d10341d248390f7-227bb89dacc100cb:T=1587097255:RT=1587097255:S=ALNI_MY-AMBU97UXscUAHgPOz3MKMPy8fA; _gat=1; _gat_allSitesTracker=1; prebid_page=0; prebid_session=0; adBlockerNewUserDomains=1587097253; PHPSESSID=mhk6k3bpp7lk851murtbmuoek5; StickySession=id.96487130819.589cn.investing.com; geoC=HK",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Host": "cn.investing.com",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Safari/605.1.15",
+            "Accept-Language": "zh-cn",
+            "Accept-Encoding": "br, gzip, deflate",
+            "Connection": "keep-alive"
         }
+
         self.stock_base_url = "https://stock.xueqiu.com/v5/stock/quote.json?symbol={}&extend=detail"
         self.stock_name_list = [".IXIC", ".INX", ".DJI", "SH000001", "SH000300", "HKHSI"]
         # self.stock_name_list = ["SH000001", "SZ399001", "SH000300"]
