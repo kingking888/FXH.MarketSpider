@@ -27,6 +27,17 @@ class StockMarket(object):
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
         }
 
+
+        self.headers_investing = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Cache-Control": "max-age=0",
+            "Connection": "keep-alive",
+            "Cookie": "adBlockerNewUserDomains=1574325947; _ga=GA1.2.138619861.1574325947; adbBLk=6; __atuvc=2%7C47; PHPSESSID=1r2a0o7kre9uvntc42qeedsbf3; SideBlockUser=a%3A2%3A%7Bs%3A10%3A%22stack_size%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Bi%3A8%3B%7Ds%3A6%3A%22stacks%22%3Ba%3A1%3A%7Bs%3A11%3A%22last_quotes%22%3Ba%3A1%3A%7Bi%3A0%3Ba%3A3%3A%7Bs%3A7%3A%22pair_ID%22%3Bs%3A3%3A%22178%22%3Bs%3A10%3A%22pair_title%22%3Bs%3A0%3A%22%22%3Bs%3A9%3A%22pair_link%22%3Bs%3A20%3A%22%2Findices%2Fjapan-ni225%22%3B%7D%7D%7D%7D; geoC=CN; prebid_page=0; prebid_session=1; StickySession=id.91738823832.268cn.investing.com; _gid=GA1.2.1464484119.1587094572; Hm_lvt_a1e3d50107c2a0e021d734fe76f85914=1587094572; nyxDorf=NTE%2BbDRhNXcxb2FqYi9hYmUwYyY%2FOWJnMzY%3D; Hm_lpvt_a1e3d50107c2a0e021d734fe76f85914=1587095762",
+            "Host": "cn.investing.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36"
+        }
         self.stock_base_url = "https://stock.xueqiu.com/v5/stock/quote.json?symbol={}&extend=detail"
         self.stock_name_list = [".IXIC", ".INX", ".DJI", "SH000001", "SH000300", "HKHSI"]
         # self.stock_name_list = ["SH000001", "SZ399001", "SH000300"]
@@ -34,7 +45,7 @@ class StockMarket(object):
         self.n225_url = "https://cn.investing.com/indices/japan-ni225"
 
         self.xau_url = "https://hq.sinajs.cn/?list=hf_XAU"
-        self.xau_year_high = 1703.39
+        self.xau_year_high = 1747.85
         self.xau_year_low = 1266.35
 
         self.redis_connect = redis.Redis(host="47.107.228.85", port=6379, password="20ab20!2#Spider!alxmH")
@@ -66,7 +77,7 @@ class StockMarket(object):
 
     def get_n225(self):
 
-        html = requests.get(self.n225_url, headers=self.headers).text
+        html = requests.get(self.n225_url, headers=self.headers_investing).text
         obj = etree.HTML(html)
 
         data1 = obj.xpath('//span[@dir="ltr"]//text()')
@@ -145,6 +156,7 @@ class StockMarket(object):
                 except Exception as e:
                     logger.error(e)
                     continue
+
 
                 data = {
                     'time': self.utc_time,
