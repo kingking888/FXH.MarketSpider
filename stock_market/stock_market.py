@@ -38,13 +38,22 @@ class StockMarket(object):
 
         self.n225_url = "https://cn.investing.com/indices/japan-ni225"
 
-        self.xau_url = "https://hq.sinajs.cn/?list=hf_XAU"
-        self.xau_year_high = 1747.85
-        self.xau_year_low = 1266.35
+        self.xau_oil_url = "https://hq.sinajs.cn/?list=hf_XAU,hf_OIL,hf_CL"
+        self.xau_year_high = 1738.70
+        self.xau_year_low = 1266.18
+
+        self.brent_year_high = 75.6
+        self.brent_year_low = 21.65
+
+        self.wti_year_high = 66.6
+        self.wti_year_low = 17.31
 
         self.redis_connect = redis.Redis(host="47.107.228.85", port=6379, password="20ab20!2#Spider!alxmH")
 
     def get_us_a(self):
+        """
+            获取美股和A股数据
+        """
         for stock_name in self.stock_name_list:
             url = self.stock_base_url.format(stock_name)
             response = requests.get(url, headers=self.headers)
@@ -70,6 +79,9 @@ class StockMarket(object):
             self.item_list.append(item)
 
     def get_n225(self):
+        """
+            获取日经225数据
+        """
 
         html = requests.get(self.n225_url, headers=self.headers_investing).text
         obj = etree.HTML(html)
@@ -100,39 +112,70 @@ class StockMarket(object):
 
         self.item_list.append(item)
 
-    def get_xau(self):
-        html = requests.get(self.xau_url).text.strip()
-        data = html[html.find("=") + 2:-2].split(",")
+    def get_xau_oil(self):
+        """
+            获取伦敦金和原油数据
+        """
+        text_list = requests.get(self.xau_oil_url).text.split(";")[:-1]
+        data_list = [text[text.find("=") + 2:-2].split(",") for text in text_list]
+        name_list = ['XAU', 'BRENT', 'WTI']
 
-        _price = float(data[0])
-        _high = float(data[4])
-        _low = float(data[5])
-        _close = float(data[7])
-        _open = float(data[8])
+        year_high = '--'
+        year_low = '--'
 
-        if _price > self.xau_year_high:
-            self.xau_year_high = _price
+        for name, data in zip(name_list, data_list):
+            # print(data)
 
-        if _price < self.xau_year_low:
-            self.xau_year_low = _price
+            _price = float(data[0])
+            _high = float(data[4])
+            _low = float(data[5])
+            _close = float(data[7])
+            _open = float(data[8])
 
-        item = {
-            'name': 'XAU',
-            'price': _price,
-            'increase_rate': float("%2f" % (_price - _close)),
-            'increase_amount': float("%2f" % ((_price - _close) / _close * 100)),
-            'amplitude': float("%2f" % ((_high - _low) / _close * 100)),
-            'open': _open,
-            'close': _close,
-            'high': _high,
-            'low': _low,
-            'volume': None,
-            'amount': None,
-            'year_high': self.xau_year_high,
-            'year_low': self.xau_year_low
-        }
+            if name == 'XAU':
+                if _price > self.xau_year_high:
+                    self.xau_year_high = _price
+                if _price < self.xau_year_low:
+                    self.xau_year_low = _price
 
-        self.item_list.append(item)
+                year_high = self.xau_year_high
+                year_low = self.xau_year_low
+
+            elif name == 'BRENT':
+                if _price > self.brent_year_high:
+                    self.brent_year_high = _price
+                if _price < self.brent_year_low:
+                    self.brent_year_low = _price
+
+                year_high = self.brent_year_high
+                year_low = self.brent_year_low
+
+            elif name == 'WTI':
+                if _price > self.wti_year_high:
+                    self.wti_year_high = _price
+                if _price < self.wti_year_low:
+                    self.wti_year_low = _price
+
+                year_high = self.wti_year_high
+                year_low = self.wti_year_low
+
+            item = {
+                'name': name,
+                'price': _price,
+                'increase_rate': float("%2f" % (_price - _close)),
+                'increase_amount': float("%2f" % ((_price - _close) / _close * 100)),
+                'amplitude': float("%2f" % ((_high - _low) / _close * 100)),
+                'open': _open,
+                'close': _close,
+                'high': _high,
+                'low': _low,
+                'volume': None,
+                'amount': None,
+                'year_high': year_high,
+                'year_low': year_low
+            }
+            # print(item)
+            self.item_list.append(item)
 
     def main(self):
         while True:
@@ -145,8 +188,8 @@ class StockMarket(object):
                     self.get_us_a()
                     # 获取日经225（数据源英为财经）
                     self.get_n225()
-                    # 获取伦敦金（数据源新浪财经）
-                    self.get_xau()
+                    # 获取伦敦金和原油（数据源新浪财经）
+                    self.get_xau_oil()
                 except Exception as e:
                     logger.error(e)
                     continue
