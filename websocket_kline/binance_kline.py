@@ -9,6 +9,7 @@ import json
 import random
 import gc
 import requests
+import copy
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -16,6 +17,7 @@ from lib.logger import Logger
 from lib.config_manager import Config
 
 import ssl
+
 ssl._create_default_https_context = ssl._create_unverified_context
 
 
@@ -123,9 +125,9 @@ class BinanceKlineSpider(object):
             item["Volume"] = 0  # 币安暂时没有（张）
             # print(item)
 
-
+            realtime_item = copy.copy(item)
             # -------------- realtime
-            redis_key_name_realtime = "binance:futures:kline:{}_{}_realtime_kline".format(self.symbol, self.kline_type)
+            redis_key_name_realtime = "binance:futures:rtkline:{}_{}_realtime_kline".format(self.symbol, self.kline_type)
 
             realtime_item = item
             realtime_item['time'] = int(time.time() * 1000)
@@ -139,7 +141,7 @@ class BinanceKlineSpider(object):
                 except:
                     pass
                 self.last_realtime = realtime_item
-
+            del realtime_item
 
             # -------------- 1min time
             redis_key_name = "binance:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)

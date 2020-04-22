@@ -9,6 +9,7 @@ import json
 import requests
 import random
 import gc
+import copy
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -129,8 +130,9 @@ class HuobiProKlineSpider(object):
             item["Volume"] = tick.get("vol")
             # print(item)
 
+            realtime_item = copy.copy(item)
             # -------------- realtime
-            redis_key_name_realtime = "huobipro:futures:kline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
+            redis_key_name_realtime = "huobipro:futures:rtkline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
 
             realtime_item = item
             realtime_item['time'] = int(time.time() * 1000)
@@ -144,7 +146,7 @@ class HuobiProKlineSpider(object):
                 except:
                     pass
                 self.last_realtime = realtime_item
-
+            del realtime_item
 
             # -------------- 1min time
             redis_key_name = "huobipro:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)

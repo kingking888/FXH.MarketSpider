@@ -8,6 +8,7 @@ import threading
 import json
 import requests
 import random
+import copy
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -121,8 +122,9 @@ class GateKlineSpider(object):
                 item["Volume"] = info.get("v")
                 # print(item)
 
+                realtime_item = copy.copy(item)
                 # -------------- realtime
-                redis_key_name_realtime = "gate-io:futures:kline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
+                redis_key_name_realtime = "gate-io:futures:rtkline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
 
                 realtime_item = item
                 realtime_item['time'] = int(time.time() * 1000)
@@ -136,7 +138,7 @@ class GateKlineSpider(object):
                     except:
                         pass
                     self.last_realtime = realtime_item
-
+                del realtime_item
 
                 # -------------- 1min time
                 redis_key_name = "gate-io:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)

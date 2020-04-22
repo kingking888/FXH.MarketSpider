@@ -8,6 +8,7 @@ import json
 import requests
 import gc
 import random
+import copy
 
 from websocket import create_connection
 from lib.decorator import tail_call_optimized
@@ -123,11 +124,11 @@ class OkexKlineSpider(object):
             item["Amount"] = eval(tick[6])
             item["Volume"] = eval(tick[5])
             # print(item)
+            realtime_item = copy.copy(item)
 
             # -------------- realtime
-            redis_key_name_realtime = "okex:futures:kline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
+            redis_key_name_realtime = "okex:futures:rtkline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
 
-            realtime_item = item
             realtime_item['Time'] = int(time.time() * 1000)
             if self.last_realtime is None:
                 self.last_realtime = realtime_item
@@ -139,7 +140,7 @@ class OkexKlineSpider(object):
                 except:
                     pass
                 self.last_realtime = realtime_item
-
+            del realtime_item
 
             # -------------- 1min time
             redis_key_name = "okex:futures:kline:{}_{}_{}_1min_kline".format(self.symbol, self.coin, self.kline_type)
