@@ -27,6 +27,7 @@ class BinanceKlineSpider(object):
         self.req = req
         self.kline_type = kline_type
         self.last_item = None
+        self.last_realtime = None
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
@@ -109,6 +110,7 @@ class BinanceKlineSpider(object):
             tick = result.get("data").get("k")
             item = {}
             item["Time"] = int(tick.get("t") / 1000)
+            # item["Time"] = tick.get("t")
             #item["Pair1"] = self.symbol
             #item["Pair2"] = "USDT"
             #item["Title"] = self.kline_type
@@ -120,17 +122,29 @@ class BinanceKlineSpider(object):
             item["Volume"] = 0  # 币安暂时没有（张）
             # print(item)
 
-            redis_key_name = "binance:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
-            # now_time = int(time.time() / 60) * 60
 
+            # -------------- realtime
+            redis_key_name_realtime = "binance:futures:kline:{}_{}_realtime_kline".format(self.symbol, self.kline_type)
+
+            realtime_item = item
+            realtime_item['time'] = int(time.time() * 1000)
+            if self.last_realtime is None:
+                self.last_realtime = realtime_item
+
+            if realtime_item['time'] - self.last_realtime['time'] > 1000:
+                redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
+                self.last_realtime = realtime_item
+
+            # -------------- 1min time
+            redis_key_name = "binance:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
             if self.last_item is None:
                 self.last_item = item
 
             if item["Time"] == self.last_item["Time"]:
-                #print("----Same time, save new item: ", item)
+                # print("----Same time, save new item: ", item)
                 self.last_item = item
             elif item["Time"] > self.last_item["Time"]:
-                #print("--------Different time, push last item and new item: ")
+                # print("--------Different time, push last item and new item: ")
                 # redis_connect.rpush(redis_key_name, json.dumps(self.last_item))
                 while True:
                     try:

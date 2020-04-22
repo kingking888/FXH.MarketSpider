@@ -28,6 +28,7 @@ class OkexKlineSpider(object):
         self.exchange = exchange
         self.last_item = None
         self.count = 0
+        self.last_realtime = None
 
     @staticmethod
     def deflate_decode(result):
@@ -123,9 +124,20 @@ class OkexKlineSpider(object):
             item["Volume"] = eval(tick[5])
             # print(item)
 
-            redis_key_name = "okex:futures:kline:{}_{}_{}_1min_kline".format(self.symbol, self.coin, self.kline_type)
-            # now_time = int(time.time() / 60) * 60
+            # -------------- realtime
+            redis_key_name_realtime = "okex:futures:kline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
 
+            realtime_item = item
+            realtime_item['time'] = int(time.time() * 1000)
+            if self.last_realtime is None:
+                self.last_realtime = realtime_item
+
+            if realtime_item['time'] - self.last_realtime['time'] > 1000:
+                redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
+                self.last_realtime = realtime_item
+            
+            # -------------- 1min time
+            redis_key_name = "okex:futures:kline:{}_{}_{}_1min_kline".format(self.symbol, self.coin, self.kline_type)
             if self.last_item is None:
                 self.last_item = item
 
@@ -186,7 +198,7 @@ def get_instruments():
                 item = {}
                 item['pair1'] = futures.get('base_currency')
                 item['pair2'] = futures.get("quote_currency")
-                if item['pair2'] == 'USDT':
+                if item['pair2'] == 'USD':
                     timeid = futures.get('alias')
                     if timeid == 'this_week':
                         item['timeid'] = 'CW'

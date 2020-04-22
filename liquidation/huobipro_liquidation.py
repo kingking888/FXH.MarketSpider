@@ -25,7 +25,7 @@ class HuobiproSpider(object):
         logger.info('数字货币：BTC 强制平仓数据获取开始：')
         while True:
             try:
-                if int(time.time()) % 300 > 290 or self.first_run:
+                if int(time.time()) % 300 > 298 or self.first_run:
                     logger.info("正在获取最新合约信息(每5分钟更新): ")
                     contract_info_list = requests.get(self.contract_info_url).json()['data']
                     # 获取BTC币种数据   {'BTC200221': 'this_week', 'BTC200228': 'next_week', 'BTC200327': 'quarter'}
@@ -54,7 +54,7 @@ class HuobiproSpider(object):
                             item['Pair1'] = data['symbol']
                             item['Pair2'] = 'USD'
                             item['Price'] = data['price']
-                            item['Liquidation'] = 'Short' if data['direction'] == 'sell' else 'Long'
+                            item['Liquidation'] = 'Long' if data['direction'] == 'sell' else 'Short'
                             item['Volume'] = data['volume']
                             item['USD'] = data['volume'] * 100
 

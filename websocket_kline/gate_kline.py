@@ -26,6 +26,7 @@ class GateKlineSpider(object):
         self.req = req
         self.kline_type = kline_type
         self.last_item = None
+        self.last_realtime = None
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
@@ -120,6 +121,19 @@ class GateKlineSpider(object):
                 item["Volume"] = info.get("v")
                 # print(item)
 
+                # -------------- realtime
+                redis_key_name_realtime = "gate-io:futures:kline:{}_{}_{}_realtime_kline".format(self.symbol, self.coin, self.kline_type)
+
+                realtime_item = item
+                realtime_item['time'] = int(time.time() * 1000)
+                if self.last_realtime is None:
+                    self.last_realtime = realtime_item
+
+                if realtime_item['time'] - self.last_realtime['time'] > 1000:
+                    redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
+                    self.last_realtime = realtime_item
+
+                # -------------- 1min time
                 redis_key_name = "gate-io:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
                 # now_time = int(time.time() / 60) * 60
 
