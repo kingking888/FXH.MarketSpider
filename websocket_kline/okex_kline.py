@@ -135,7 +135,8 @@ class OkexKlineSpider(object):
             if realtime_item['time'] - self.last_realtime['time'] > 1000:
                 redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
                 self.last_realtime = realtime_item
-            
+
+
             # -------------- 1min time
             redis_key_name = "okex:futures:kline:{}_{}_{}_1min_kline".format(self.symbol, self.coin, self.kline_type)
             if self.last_item is None:

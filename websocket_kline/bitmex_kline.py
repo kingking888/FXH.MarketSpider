@@ -29,6 +29,7 @@ class BitmexKlineSpider(object):
         self.last_item = None
         self.last_realtime = None
 
+
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
     def task_thread(self):

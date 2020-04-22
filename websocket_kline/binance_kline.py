@@ -135,6 +135,7 @@ class BinanceKlineSpider(object):
                 redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
                 self.last_realtime = realtime_item
 
+
             # -------------- 1min time
             redis_key_name = "binance:futures:kline:{}_{}_1min_kline".format(self.symbol, self.kline_type)
             if self.last_item is None:
