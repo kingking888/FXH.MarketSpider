@@ -35,6 +35,7 @@ class OkexSpider(object):
             self.liquidation_url = liquidation['liquidation_url']
             self.redis_key = "okex:futures:liquidation:{}_{}_forced_liquidation".format(self.symbol.split("-")[0], self.timeid)
 
+
             try:
                 result_list = requests.get(self.liquidation_url, proxies=proxy()).json()
                 data_list = result_list[::-1]

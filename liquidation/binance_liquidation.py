@@ -17,6 +17,7 @@ while True:
         # ws.send('{"op": "subscribe", "args": ["liquidation:XBTUSD"]}')
         # logger.info(ws.recv())
 
+
         while True:
             result = json.loads(ws.recv())
             if result.get("o"):

@@ -36,6 +36,7 @@ class HuobiproSpider(object):
                 # result = requests.get(self.liquidation_url, proxies=proxies).json()
                 result = requests.get(self.liquidation_url).json()
 
+
                 if result['status'] == 'ok':
                     data_list = result['data']['orders'][::-1]
                     for data in data_list:

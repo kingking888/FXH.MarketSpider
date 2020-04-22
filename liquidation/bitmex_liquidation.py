@@ -39,6 +39,7 @@ while True:
                     redis_connect.lpush(redis_key.format(item['Pair1'], item['Title']), json.dumps(item))
                     logger.info(item)
 
+
     except websocket._exceptions.WebSocketConnectionClosedException as e:
         pass
     except Exception as e:
