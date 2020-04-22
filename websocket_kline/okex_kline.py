@@ -132,7 +132,7 @@ class OkexKlineSpider(object):
             if self.last_realtime is None:
                 self.last_realtime = realtime_item
 
-            if realtime_item['time'] - self.last_realtime['time'] > 1000:
+            if realtime_item['Time'] - self.last_realtime['Time'] > 1000:
                 redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
                 try:
                     redis_connect.ltrim(redis_key_name_realtime, 0, 299)
