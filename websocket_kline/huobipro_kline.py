@@ -139,6 +139,10 @@ class HuobiProKlineSpider(object):
 
             if realtime_item['time'] - self.last_realtime['time'] > 1000:
                 redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
+                try:
+                    redis_connect.ltrim(redis_key_name_realtime, 0, 299)
+                except:
+                    pass
                 self.last_realtime = realtime_item
 
 

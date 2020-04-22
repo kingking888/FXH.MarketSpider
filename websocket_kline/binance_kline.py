@@ -28,6 +28,7 @@ class BinanceKlineSpider(object):
         self.kline_type = kline_type
         self.last_item = None
         self.last_realtime = None
+        self.count = 0
 
     # 防止python 递归调用 堆栈溢出 @tail_call_optimized
     @tail_call_optimized
@@ -133,6 +134,10 @@ class BinanceKlineSpider(object):
 
             if realtime_item['time'] - self.last_realtime['time'] > 1000:
                 redis_connect.lpush(redis_key_name_realtime, json.dumps(realtime_item))
+                try:
+                    redis_connect.ltrim(redis_key_name_realtime, 0, 299)
+                except:
+                    pass
                 self.last_realtime = realtime_item
 
 

@@ -175,7 +175,7 @@ def get_instruments():
                 item = {}
                 item['pair1'] = futures.get('base_currency')
                 item['pair2'] = futures.get("quote_currency")
-                if item['pair2'] == 'USDT':
+                if item['pair2'] == 'USD':
                     timeid = futures.get('alias')
                     if timeid == 'this_week':
                         item['timeid'] = 'CW'
